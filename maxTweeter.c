@@ -6,6 +6,7 @@
 
 
 int main(int argc, char* argv[]){
+
 // A valid input csv file has columns separated with “,”’s, but you cannot assume the location of the
 // tweeter column will be fixed to a particular location (like 8 for instance). A valid csv file will have
 // a header, and the tweeter column will be called “name”, and the items may or may not be
@@ -37,18 +38,25 @@ int main(int argc, char* argv[]){
 
                 char *field = strtok(buf, ",");
                 while (field) {
-                        if (field_count == 0) {
+
+                        if (field_count == 1) {
                                 printf("tweet_id:\t");
                         }
-                        if (field_count == 1) {
+                        if (field_count == 2) {
                                 printf("airline_sentiment:\t");
                         }
-                        if (field_count == 2) {
+                        if (field_count == 3) {
                                 printf("airline_sentiment_confidence:\t");
                         }
-                        if (field_count == 3) {
+                        if (field_count == 4) {
                                 printf("negative_reason:\t");
                         }
+
+                        //TODO some are empty? 
+                        // if (field_count == 9) {
+                        //         printf("name:\t");
+                        // }
+
 
                 printf("%s\n", field);
                 field = strtok(NULL, ",");
