@@ -7,9 +7,9 @@
 
 int main(int argc, char* argv[]){
 
-        // FILE *csv_file = fopen(argv[1], "r"); // "r" for read
+        FILE *csv_file = fopen(argv[1], "r"); // "r" for read
 
-        FILE *csv_file = fopen("cl-tweets-short-clean.csv", "r");
+       
         char buf[1024];
 
         if (!csv_file) {
