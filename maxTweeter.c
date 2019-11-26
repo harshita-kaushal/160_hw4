@@ -122,6 +122,15 @@ int find_name_pos(char *file_csv){
 
 // }
 
+
+
+char* our_strcmp(char* char_pass){
+
+        char *first = &char_pass[0];
+        return first;
+        
+}
+
 int processing_file(char *file_csv){
 
         FILE *csv_file = fopen(file_csv, "r"); // "r" for read
@@ -138,18 +147,56 @@ int processing_file(char *file_csv){
         int index_of_field = 0;
 
         while (fgets(buf, 1024, csv_file)) {
-
+               
                 field_count = 0;
                 row_count++;
                 int comma_count = 0;
+                //todo fix name size
+                char *name[120];
+                int name_index = 0;
                 int cur_char = 0;
+                
+                // if (row_count==4){
+                // for (int i = 5; i < 100; i++)
+                // {       
+                //         char* pointer = &(buf[cur_char]);
+                //         printf("buf[%d] : %c\n",cur_char, pointer[0]);
+                //         cur_char++;
+                // }       
+                // break;
+                // }
+                while(comma_count < global_name_pos){
+                       
+                       char* char_first = our_strcmp(&(buf[cur_char]));
+                       printf("checking char");
 
-                while(comma_count != global_name_pos){
-                  if(strcmp(&(buf[cur_char]),",") == 0)
-                  {
-                      comma_count++;
-                  }
+                      
+                        if( char_first!=NULL && strcmp(char_first,",") == 0)
+                        {
+                                comma_count++;
+                                cur_char++;
+
+                         }
+                        else{
+                                cur_char++;
+                                }
+                  
                 }
+                printf("we reached %d commas\n", comma_count);
+                break;
+        //         while(strcmp(&(buf[cur_char]),",") == 0)
+        //        {        
+        //                name[name_index] =&(buf[cur_char]);
+        //                name_index++;
+        //                cur_char++;
+        //        }
+        //         printf("name is");
+        //         for (int i = 0; i<name_index; i++)
+        //         {
+        //              printf("%s", &buf[i]);   
+
+        //         }
+
                 // //char *field = strtok(buf, ",");
                 // if(row_count==1 || row_count ==2){
                 //         continue;
