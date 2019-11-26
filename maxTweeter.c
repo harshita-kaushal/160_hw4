@@ -47,6 +47,8 @@ int main(int argc, char* argv[]){
         char buf[1024];
         int row_count = 0;
         int field_count = 0;
+        int index_of_field = 0; 
+        int name_pos = 0;
         while (fgets(buf, 1024, csv_file)) {
                 field_count = 0;
                 row_count++;
@@ -58,42 +60,27 @@ int main(int argc, char* argv[]){
                 char *field = strtok(buf, ",");
                 while (field) {
 
-                        // if (field_count == 1) {
-                        //         printf("tweet_id:\t");
-                        // }
-                        // if (field_count == 2) {
-                        //         printf("airline_sentiment:\t");
-                        // }
-                        // if (field_count == 3) {
-                        //         printf("airline_sentiment_confidence:\t");
-                        // }
-                        // if (field_count == 4) {
-                        //         printf("negative_reason:\t");
-                        // }
+                        // this is only for the first one
+                        //assuming that header is always row1
 
-                        //  if (field_count == 5) {
-                        //         printf("name:\t");
-                        // }
-                        // if (field_count == 6) {
-                        //         printf("airline:\t");
-                        // }
-                        // if (field_count == 7) {
-                        //         printf("tweet ~~ :\t");
-                        // }
-                        
-                        //TODO some are empty? 
-                        // if (field_count == 9) {
-                        //         printf("name:\t");
-                        // }
+                
+                printf("%d : %s\n", index_of_field ,field);
+                if (strcmp(field, "name") ==0){
+                       
+                        name_pos = index_of_field;
+                        printf("Name is at index %d\n", name_pos);
+                        break;
 
+                }
+                index_of_field++;
 
-                printf("%s\n", field);
                 field = strtok(NULL, ",");
 
                 field_count++;
                 }
-                printf("\n");
-                }
+                // printf("\n");
+                break;
+        }
 
 
         fclose(csv_file);
