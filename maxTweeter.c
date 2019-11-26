@@ -5,16 +5,7 @@
 #include <string.h>
 
 
-
-#define MAX_SIZE 180
-
-//have an array of structs, one unique one for each twitter user
-//store the username and then increment the count every time we encounter a tweet 
-
-
 struct USER_ARR{
-
-        
         char twitter_username[1024]; //clarify later 
         int count_of_tweets; 
        
@@ -25,7 +16,7 @@ int temp = 1000;
 //can declare this within main 
 struct USER_ARR GLOBAL_USERS[20000];
 
-int name_pos = 0;
+int global_name_pos = 0;
 
 int find_row_pos(char *file_csv){
 
@@ -51,7 +42,7 @@ int find_row_pos(char *file_csv){
 
                         printf("%d : %s\n", index_of_field ,field);
                         if (strcmp(field, "name") ==0){
-                                name_pos = index_of_field;
+                                global_name_pos = index_of_field;
                                 break;
                 }
                 index_of_field++;
@@ -63,19 +54,24 @@ int find_row_pos(char *file_csv){
                 // printf("\n");
                 break;
         }
-
-
         fclose(csv_file);
-
-
+        return global_name_pos;
 
 }
 int main(int argc, char* argv[]){
 
 
         char* file_name = argv[1];
-        find_row_pos(argv[1]);
-        printf("Name is at index %d\n", name_pos);
+        
+        int res_find_row = find_row_pos(argv[1]);
+        
+        //couldn't open file
+        if (res_find_row ==-1)
+        {
+                printf("Invalid Input Format");
+                return 0;
+        }
+        printf("Name is at index %d\n", global_name_pos);
 
         return 0;
 
