@@ -128,7 +128,7 @@ char* our_strcmp(char* char_pass){
 
         char *first = &char_pass[0];
         return first;
-        
+
 }
 
 int processing_file(char *file_csv){
@@ -141,13 +141,13 @@ int processing_file(char *file_csv){
                 printf("Can't open file\n");
                 return -1;
         }
-        char buf[1024];
+        char buf[MAX_LINE_LEN];
         int row_count = 0;
         int field_count = 0;
         int index_of_field = 0;
 
         while (fgets(buf, 1024, csv_file)) {
-               
+
                 field_count = 0;
                 row_count++;
                 int comma_count = 0;
@@ -155,37 +155,45 @@ int processing_file(char *file_csv){
                 char *name[120];
                 int name_index = 0;
                 int cur_char = 0;
-                
-                // if (row_count==4){
-                // for (int i = 5; i < 100; i++)
-                // {       
-                //         char* pointer = &(buf[cur_char]);
-                //         printf("buf[%d] : %c\n",cur_char, pointer[0]);
-                //         cur_char++;
-                // }       
-                // break;
-                // }
-                while(comma_count < global_name_pos){
-                       
-                       char* char_first = our_strcmp(&(buf[cur_char]));
-                       printf("checking char");
 
-                      
-                        if( char_first!=NULL && strcmp(char_first,",") == 0)
-                        {
-                                comma_count++;
-                                cur_char++;
 
-                         }
-                        else{
-                                cur_char++;
-                                }
-                  
+                if (row_count==4){
+                for (int i = 5; i < 100; i++)
+                {
+                        char* pointer = &(buf[cur_char]);
+                        printf("buf[%d] : %c\n",cur_char, pointer[0]);
+                        cur_char++;
                 }
-                printf("we reached %d commas\n", comma_count);
                 break;
+                }
+                // while(comma_count < global_name_pos){
+                //
+                //        // char* char_first = our_strcmp(&(buf[cur_char]));
+                //        printf("checking char");
+                //        printf("char is: %s\n", &buf[0]);
+                //
+                //        if(strcmp(&buf[0],",") == 0){
+                //          comma_count++;
+                //          cur_char++;
+                //        }else{
+                //          cur_char++;
+                //        }
+                //
+                //         // if( char_first!=NULL && strcmp(char_first,",") == 0)
+                //         // {
+                //         //         comma_count++;
+                //         //         cur_char++;
+                //         //
+                //         //  }
+                //         // else{
+                //         //         cur_char++;
+                //         //         }
+                //
+                // }
+                // printf("we reached %d commas\n", comma_count);
+                // break;
         //         while(strcmp(&(buf[cur_char]),",") == 0)
-        //        {        
+        //        {
         //                name[name_index] =&(buf[cur_char]);
         //                name_index++;
         //                cur_char++;
@@ -193,7 +201,7 @@ int processing_file(char *file_csv){
         //         printf("name is");
         //         for (int i = 0; i<name_index; i++)
         //         {
-        //              printf("%s", &buf[i]);   
+        //              printf("%s", &buf[i]);
 
         //         }
 
