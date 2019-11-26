@@ -5,6 +5,26 @@
 #include <string.h>
 
 
+
+#define MAX_SIZE 180
+
+//have an array of structs, one unique one for each twitter user
+//store the username and then increment the count every time we encounter a tweet 
+//  then store the structs w/ the highest counts of the tweets as output
+
+struct USER_ARR{
+        char twitter_username[100];
+        int count_of_tweets; 
+};
+
+
+//won't be able to know until we have a size of users, but we can probably malloc 
+int temp = 1000;
+
+//can declare this within main 
+struct USER_ARR GLOBAL_USERS[1000];
+
+
 int main(int argc, char* argv[]){
 
 // A valid input csv file has columns separated with “,”’s, but you cannot assume the location of the
@@ -16,8 +36,6 @@ int main(int argc, char* argv[]){
 // However, your program should not crash on any input, even invalid ones.
 
         FILE *csv_file = fopen(argv[1], "r"); // "r" for read
-
-       
 
 
         if (!csv_file) {
@@ -39,19 +57,29 @@ int main(int argc, char* argv[]){
                 char *field = strtok(buf, ",");
                 while (field) {
 
-                        if (field_count == 1) {
-                                printf("tweet_id:\t");
-                        }
-                        if (field_count == 2) {
-                                printf("airline_sentiment:\t");
-                        }
-                        if (field_count == 3) {
-                                printf("airline_sentiment_confidence:\t");
-                        }
-                        if (field_count == 4) {
-                                printf("negative_reason:\t");
-                        }
+                        // if (field_count == 1) {
+                        //         printf("tweet_id:\t");
+                        // }
+                        // if (field_count == 2) {
+                        //         printf("airline_sentiment:\t");
+                        // }
+                        // if (field_count == 3) {
+                        //         printf("airline_sentiment_confidence:\t");
+                        // }
+                        // if (field_count == 4) {
+                        //         printf("negative_reason:\t");
+                        // }
 
+                         if (field_count == 5) {
+                                printf("name:\t");
+                        }
+                        // if (field_count == 6) {
+                        //         printf("airline:\t");
+                        // }
+                        if (field_count == 7) {
+                                printf("tweet ~~ :\t");
+                        }
+                        
                         //TODO some are empty? 
                         // if (field_count == 9) {
                         //         printf("name:\t");
