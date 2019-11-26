@@ -10,19 +10,20 @@
 
 //have an array of structs, one unique one for each twitter user
 //store the username and then increment the count every time we encounter a tweet 
-//  then store the structs w/ the highest counts of the tweets as output
+
 
 struct USER_ARR{
-        char twitter_username[100];
+
+        
+        char twitter_username[1024]; //clarify later 
         int count_of_tweets; 
+       
 };
-
-
-//won't be able to know until we have a size of users, but we can probably malloc 
+//won't be able to know until we have a size of users, but we can probably mal
 int temp = 1000;
 
 //can declare this within main 
-struct USER_ARR GLOBAL_USERS[1000];
+struct USER_ARR GLOBAL_USERS[20000];
 
 
 int main(int argc, char* argv[]){
@@ -40,7 +41,7 @@ int main(int argc, char* argv[]){
 
         if (!csv_file) {
                 printf("Can't open file\n");
-                return 1;
+                return -1;
         }
 
         char buf[1024];
@@ -50,9 +51,9 @@ int main(int argc, char* argv[]){
                 field_count = 0;
                 row_count++;
 
-                if (row_count == 1) {
-                continue;
-                }
+                // if (row_count == 1) {
+                // continue;
+                // }
 
                 char *field = strtok(buf, ",");
                 while (field) {
@@ -70,15 +71,15 @@ int main(int argc, char* argv[]){
                         //         printf("negative_reason:\t");
                         // }
 
-                         if (field_count == 5) {
-                                printf("name:\t");
-                        }
+                        //  if (field_count == 5) {
+                        //         printf("name:\t");
+                        // }
                         // if (field_count == 6) {
                         //         printf("airline:\t");
                         // }
-                        if (field_count == 7) {
-                                printf("tweet ~~ :\t");
-                        }
+                        // if (field_count == 7) {
+                        //         printf("tweet ~~ :\t");
+                        // }
                         
                         //TODO some are empty? 
                         // if (field_count == 9) {
