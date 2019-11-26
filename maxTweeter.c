@@ -6,14 +6,14 @@
 #define MAX_FILE_SIZE 20000
 #define MAX_LINE_LEN 1024
 struct USER_ARR{
-        char twitter_username[MAX_LINE_LEN]; //clarify later 
-        int count_of_tweets; 
-       
+        char twitter_username[MAX_LINE_LEN]; //clarify later
+        int count_of_tweets;
+
 };
 //won't be able to know until we have a size of users, but we can probably mal
 int temp = 1000;
 
-//can declare this within main 
+//can declare this within main
 struct USER_ARR* GLOBAL_USERS_ARR[MAX_FILE_SIZE];
 
 int global_name_pos = 0;
@@ -22,8 +22,8 @@ int global_num_structs= 0;
 int find_name_pos(char *file_csv){
 
         FILE *csv_file = fopen(file_csv, "r"); // "r" for read
-        
-        //todo more error checking later on 
+
+        //todo more error checking later on
         //checks if file exists
         if (!csv_file) {
                 printf("Can't open file\n");
@@ -32,13 +32,13 @@ int find_name_pos(char *file_csv){
         char buf[1024];
         int row_count = 0;
         int field_count = 0;
-        int index_of_field = 0; 
+        int index_of_field = 0;
 
         while (fgets(buf, 1024, csv_file)) {
                 field_count = 0;
                 row_count++;
                 char *field = strtok(buf, ",");
-                
+
                 // this is for the first row
                 //assuming that header is always row1
                 while (field) {
@@ -65,27 +65,27 @@ int find_name_pos(char *file_csv){
 
 // //@key - > at namepos within the line
 // int hash_index_search(int key) {
- 
-//   int hashIndex = hashCode(key);  
+
+//   int hashIndex = hashCode(key);
 //   printf("hash Index is %d\n", hashIndex);
-//   //move in array until an empty 
+//   //move in array until an empty
 //   while(GLOBAL_USERS_ARR[hashIndex] != NULL) {
 // // 	  printf("at hashIndex %d\n", hashIndex);
 //       if(GLOBAL_USERS_ARR[hashIndex]->twitter_username == key)
-//         { 
+//         {
 //             return hashIndex;
 //             // return hashArray[hashIndex];
 //         }
-		 
+
 //       //go to next cell
 //       ++hashIndex;
-		
+
 //       //wrap around the table
 //       hashIndex %= MAX_SIZE;
-//   }        
-	
+//   }
+
 //     //if not found
-//   return -1;        
+//   return -1;
 // }
 
 //TODO uncomment
@@ -98,8 +98,8 @@ int find_name_pos(char *file_csv){
 //                                 // GLOBAL_USERS_ARR[i]->count_of_tweets +=1;
 //                                 return index;
 //                         }
-                       
-//                 } 
+
+//                 }
 //          }
 //         return -1;
 
@@ -113,11 +113,11 @@ int find_name_pos(char *file_csv){
 //         // if hashcode_match
 //         //         struct.count +=1
 
-       
-//         // else 
+
+//         // else
 //         //         global_num_structs++
 //         //         GLOBAL_USERS_ARR[global_num_structs] = struct
-                
+
 
 
 // }
@@ -126,7 +126,7 @@ int processing_file(char *file_csv){
 
         FILE *csv_file = fopen(file_csv, "r"); // "r" for read
         printf("128\n");
-        //todo more error checking later on 
+        //todo more error checking later on
         //checks if file exists
         if (!csv_file) {
                 printf("Can't open file\n");
@@ -135,31 +135,40 @@ int processing_file(char *file_csv){
         char buf[1024];
         int row_count = 0;
         int field_count = 0;
-        int index_of_field = 0; 
+        int index_of_field = 0;
 
         while (fgets(buf, 1024, csv_file)) {
-                
+
                 field_count = 0;
                 row_count++;
-                char *field = strtok(buf, ",");
-                if(row_count==1 || row_count ==2){
-                        continue;       
-                }
+                int comma_count = 0;
+                int cur_char = 0;
 
-                while (field) {
-                        
-                //         if (index_of_field==global_name_pos)
-                //        { 
-                        printf("%d : %s\n", index_of_field ,field);
-                //        }
-                index_of_field++;
-
-                field = strtok(NULL, ",");
-                printf("field after second strtok %s\n",field);
-                field_count++;
+                while(comma_count != global_name_pos){
+                  if(strcmp(&(buf[cur_char]),",") == 0)
+                  {
+                      comma_count++;
+                  }
                 }
-                // printf("\n");
-                
+                // //char *field = strtok(buf, ",");
+                // if(row_count==1 || row_count ==2){
+                //         continue;
+                // }
+                //
+                // while (field) {
+                //
+                // //         if (index_of_field==global_name_pos)
+                // //        {
+                //         printf("%d : %s\n", index_of_field ,field);
+                // //        }
+                // index_of_field++;
+                //
+                // field = strtok(NULL, ",");
+                // printf("field after second strtok %s\n",field);
+                // field_count++;
+                // }
+                // // printf("\n");
+
         }
         fclose(csv_file);
         return 0;
@@ -167,19 +176,13 @@ int processing_file(char *file_csv){
 }
 
 
-
-
-
-
-
-
 int main(int argc, char* argv[]){
 
 
         // char* file_name = argv[1];
-        
+
         int res_find_row = find_name_pos(argv[1]);
-       
+
         int process_rest_file  = processing_file(argv[1]);
         printf("processing is taking a long time");
         //couldn't open file
@@ -188,14 +191,12 @@ int main(int argc, char* argv[]){
                 printf("Invalid Input Format");
                 return 0;
         }
-       
+
         printf("Name is at index %d\n", global_name_pos);
 
-       
+
         return 0;
 
 
 
 }
-
-
