@@ -81,30 +81,46 @@ int processing_file(char *file_csv){
 
         while (fgets(buf, 1024, csv_file)) {
                
-                char *ptr = buf; //same as char *ptr = &arr[0]
                 field_count = 0;
                 row_count++;
                 int comma_count = 0;
                 
-                int name_index = 0;
                 int cur_char = 0;
 
-                printf("%s\n", buf);
+                // printf("%s\n", buf);
+        
                 
-               
-                char cpy = buf[2];
+                
+                while (cur_char< 1024){
+                
+                char cpy = buf[cur_char];
                 if (strcmp(&cpy, ",")==0)
                 {
-                        printf("comma is present is %c\n",buf[2]);
+                        printf("comma is present is %c\n",cpy);
+                                cur_char+=1;
+                                comma_count+=1;
+                                break;
                 }
-                // printf("buf at index %d is %c\n", cur_char,  ptr[cur_char]);
-                cur_char++;
-                break;
+                else{
+                        printf("buf[%d] is %c\n",cur_char, cpy);
+                        cur_char+=1; 
+                        }
+                }
+                
+   
+                if (comma_count == global_name_pos){
+                        
+                        break;
+                }
+                }
+
+
+                return 0;
+
                         }
 
-        return 0;
         
-}
+
 
 
 
