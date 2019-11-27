@@ -63,74 +63,6 @@ int find_name_pos(char *file_csv){
 }
 
 
-// //@key - > at namepos within the line
-// int hash_index_search(int key) {
-
-//   int hashIndex = hashCode(key);
-//   printf("hash Index is %d\n", hashIndex);
-//   //move in array until an empty
-//   while(GLOBAL_USERS_ARR[hashIndex] != NULL) {
-// // 	  printf("at hashIndex %d\n", hashIndex);
-//       if(GLOBAL_USERS_ARR[hashIndex]->twitter_username == key)
-//         {
-//             return hashIndex;
-//             // return hashArray[hashIndex];
-//         }
-
-//       //go to next cell
-//       ++hashIndex;
-
-//       //wrap around the table
-//       hashIndex %= MAX_SIZE;
-//   }
-
-//     //if not found
-//   return -1;
-// }
-
-//TODO uncomment
-// int struct_match_search(char* username){
-
-//         for (int index = 0; index<global_num_structs; index++) {
-//                 if (GLOBAL_USERS_ARR[index]->twitter_username!=NULL){
-//                         if (strcmp(GLOBAL_USERS_ARR[index]->twitter_username, username)==0)
-//                         {
-//                                 // GLOBAL_USERS_ARR[i]->count_of_tweets +=1;
-//                                 return index;
-//                         }
-
-//                 }
-//          }
-//         return -1;
-
-// }
-
-//TODO UNCOMMENT
-// void append_to_arr(){
-
-
-
-//         // if hashcode_match
-//         //         struct.count +=1
-
-
-//         // else
-//         //         global_num_structs++
-//         //         GLOBAL_USERS_ARR[global_num_structs] = struct
-
-
-
-// }
-
-
-
-char* our_strcmp(char* char_pass){
-
-        char *first = &char_pass[0];
-        return first;
-        
-}
-
 int processing_file(char *file_csv){
 
         FILE *csv_file = fopen(file_csv, "r"); // "r" for read
@@ -173,6 +105,16 @@ int processing_file(char *file_csv){
         return 0;
         
 }
+
+
+
+char* our_strcmp(char* char_pass){
+
+        char *first = &char_pass[0];
+        return first;
+
+}
+
 
 
 
