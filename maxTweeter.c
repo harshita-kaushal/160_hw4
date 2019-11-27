@@ -74,10 +74,8 @@ int processing_file(char *file_csv){
                 return -1;
         }
         char buf[1024];
-
         int row_count = 0;
         int field_count = 0;
-        int index_of_field = 0;
 
         while (fgets(buf, 1024, csv_file)) {
                
@@ -86,33 +84,29 @@ int processing_file(char *file_csv){
                 int comma_count = 0;
                 
                 int cur_char = 0;
-
-                // printf("%s\n", buf);
-        
-                
-                
                 while (cur_char< 1024){
                 
-                char cpy = buf[cur_char];
-                if (strcmp(&cpy, ",")==0)
-                {
-                        printf("comma is present is %c\n",cpy);
+                        char cpy = buf[cur_char];
+                        // if (strcmp(&cpy, ",")==0)
+                        if (cpy== ',')
+                        {
+                                printf("cpy %c is %d\n",cpy, comma_count);
                                 cur_char+=1;
                                 comma_count+=1;
-                                break;
-                }
-                else{
-                        printf("buf[%d] is %c\n",cur_char, cpy);
-                        cur_char+=1; 
+                                if (comma_count == 8){
+                                        printf("comma count is %d\n", comma_count);
+                                        break;
+                        }                
+                                        
                         }
-                }
+                        else{
+                                // printf("buf[%d] is %c\n",cur_char, cpy);
+                                cur_char+=1; 
+                                }
+                        }
+                            
                 
-   
-                if (comma_count == global_name_pos){
-                        
-                        break;
-                }
-                }
+        }
 
 
                 return 0;
