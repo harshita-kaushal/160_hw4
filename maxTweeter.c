@@ -114,18 +114,25 @@ int processing_file(char *file_csv)
       else
       {
         char cpy = buf[cur_char];
+        printf("char: %c\n", cpy);
         if (cpy == ',')
         {
           cur_char += 1;
           row_comma_count += 1;
-          printf("row comma count is %d\n", row_comma_count);
+          printf("row comma count is %d, char is %d\n", row_comma_count,cur_char);
 
-          if(row_comma_count > global_header_comma_count){
-            printf("Invalid Input Format\n");
-            printf("global_header_comma_count is %d\n", global_header_comma_count);
-            return -1;
+            if(row_comma_count > global_header_comma_count)
+            {
+              return -1;
+            }
+
+        }
+        else if(cur_char == 1023)
+        {
+          if(row_comma_count < global_header_comma_count)
+          {
+              return -1;
           }
-
         }
 
         else
@@ -134,15 +141,9 @@ int processing_file(char *file_csv)
         }
       }
 
-
     }
 
-    if(row_comma_count < global_header_comma_count)
-    {
-        printf("Invalid Input Format\n");
-        printf("global_header_comma_count is %d\n", global_header_comma_count);
-        return -1;
-    }
+
   }
 
   return 0;
