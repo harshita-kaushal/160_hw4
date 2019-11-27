@@ -78,12 +78,15 @@ int processing_file(char *file_csv)
     return -1;
   }
 
-  char buf[1024];
+  char buf[2048];
   int row_count = 0;
   int field_count = 0;
 
-  while (fgets(buf, 1024, csv_file))
+  while (fgets(buf, 2048, csv_file))
   {
+    if(strlen(buf) > 1024){
+      return -1;
+    }
 
     field_count = 0;
     row_count++;
@@ -91,7 +94,7 @@ int processing_file(char *file_csv)
     int row_comma_count = 0;
 
     int cur_char = 0;
-    while (cur_char < 1024)
+    while (cur_char < strlen(buf))
     {
       //need to get global_comma_count
       if (row_count == 1)
