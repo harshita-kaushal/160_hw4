@@ -134,7 +134,7 @@ char* our_strcmp(char* char_pass){
 int processing_file(char *file_csv){
 
         FILE *csv_file = fopen(file_csv, "r"); // "r" for read
-        printf("128\n");
+       
         //todo more error checking later on
         //checks if file exists
         if (!csv_file) {
@@ -142,85 +142,38 @@ int processing_file(char *file_csv){
                 return -1;
         }
         char buf[1024];
+
         int row_count = 0;
         int field_count = 0;
         int index_of_field = 0;
 
         while (fgets(buf, 1024, csv_file)) {
                
+                char *ptr = buf; //same as char *ptr = &arr[0]
                 field_count = 0;
                 row_count++;
                 int comma_count = 0;
-                //todo fix name size
-                char *name[120];
+                
                 int name_index = 0;
                 int cur_char = 0;
+
+                printf("%s\n", buf);
                 
-                // if (row_count==4){
-                // for (int i = 5; i < 100; i++)
-                // {       
-                //         char* pointer = &(buf[cur_char]);
-                //         printf("buf[%d] : %c\n",cur_char, pointer[0]);
-                //         cur_char++;
-                // }       
-                // break;
-                // }
-                while(comma_count < global_name_pos){
-                       
-                       char* char_first = our_strcmp(&(buf[cur_char]));
-                       printf("checking char");
-
-                      
-                        if( char_first!=NULL && strcmp(char_first,",") == 0)
-                        {
-                                comma_count++;
-                                cur_char++;
-
-                         }
-                        else{
-                                cur_char++;
-                                }
-                  
+               
+                char cpy = buf[2];
+                if (strcmp(&cpy, ",")==0)
+                {
+                        printf("comma is present is %c\n",buf[2]);
                 }
-                printf("we reached %d commas\n", comma_count);
+                // printf("buf at index %d is %c\n", cur_char,  ptr[cur_char]);
+                cur_char++;
                 break;
-        //         while(strcmp(&(buf[cur_char]),",") == 0)
-        //        {        
-        //                name[name_index] =&(buf[cur_char]);
-        //                name_index++;
-        //                cur_char++;
-        //        }
-        //         printf("name is");
-        //         for (int i = 0; i<name_index; i++)
-        //         {
-        //              printf("%s", &buf[i]);   
+                        }
 
-        //         }
-
-                // //char *field = strtok(buf, ",");
-                // if(row_count==1 || row_count ==2){
-                //         continue;
-                // }
-                //
-                // while (field) {
-                //
-                // //         if (index_of_field==global_name_pos)
-                // //        {
-                //         printf("%d : %s\n", index_of_field ,field);
-                // //        }
-                // index_of_field++;
-                //
-                // field = strtok(NULL, ",");
-                // printf("field after second strtok %s\n",field);
-                // field_count++;
-                // }
-                // // printf("\n");
-
-        }
-        fclose(csv_file);
         return 0;
-
+        
 }
+
 
 
 int main(int argc, char* argv[]){
@@ -231,7 +184,7 @@ int main(int argc, char* argv[]){
         int res_find_row = find_name_pos(argv[1]);
 
         int process_rest_file  = processing_file(argv[1]);
-        printf("processing is taking a long time");
+        // printf("processing is taking a long time");
         //couldn't open file
         if (res_find_row ==-1 || process_rest_file ==-1)
         {
@@ -239,7 +192,7 @@ int main(int argc, char* argv[]){
                 return 0;
         }
 
-        printf("Name is at index %d\n", global_name_pos);
+        // printf("Name is at index %d\n", global_name_pos);
 
 
         return 0;
