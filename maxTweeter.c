@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #define MAX_FILE_SIZE 20000
 #define MAX_LINE_LEN 1024
 
@@ -67,6 +68,9 @@ int find_name_pos(char *file_csv)
   return global_name_pos;
 }
 
+
+//right now, it checks for a consistent number of counts for each row 
+
 int processing_file(char *file_csv)
 {
 
@@ -88,64 +92,90 @@ int processing_file(char *file_csv)
       return -1;
     }
 
-    field_count = 0;
-    row_count++;
-    int comma_count = 0;
-    int row_comma_count = 0;
-
-    int cur_char = 0;
-    while (cur_char < strlen(buf))
-    {
-      //need to get global_comma_count
-      if (row_count == 1)
+      field_count = 0;
+      row_count++;
+      int comma_count = 0;
+      int row_comma_count = 0;
+      
+      int cur_char = 0;
+      while (cur_char < strlen(buf))
       {
-        char cpy = buf[cur_char];
-        if (cpy == ',')
+        bool first_comma = false;
+        //need to get global_comma_count
+        if (row_count == 1)
         {
-          cur_char += 1;
-          global_header_comma_count += 1;
-          printf("global_header_comma_count is %d\n", global_header_comma_count);
+          int first_comma_char = 0; 
+          bool quoted_beg = false;
+          bool quoted_end = false;
+          bool quoted_valid = false;
+          int second_comma_char = 0;
+          char cpy = buf[cur_char];
+          if (cpy == ',')
+          {
+              global_header_comma_count += 1;
+
+              if (quoted_beg)
+              {
+                second_comma_char = cur_char-=1;
+                char last_char = buf[second_comma_char];
+                if (last_char =="\"")
+                {
+                  quoted_end = true;
+                  quoted_valid = true;
+                }
+
+              }
+              else{
+                  first_comma_char = cur_char+=1;
+                  char first_char = buf[first_comma_char];
+                  if (first_char =="\"")
+                    {
+                      quoted_beg = true;
+                    }
+                
+              }
+            cur_char += 1;
+            printf("global_header_comma_count is %d\n", global_header_comma_count);
+          }
+
+          else
+          {
+            cur_char += 1;
+          }
 
         }
-
         else
         {
-          cur_char += 1;
-        }
-
-      }
-      else
-      {
-        char cpy = buf[cur_char];
-        printf("char: %c\n", cpy);
-        if (cpy == ',')
-        {
-          cur_char += 1;
-          row_comma_count += 1;
-          printf("row comma count is %d, char is %d\n", row_comma_count,cur_char);
-
-            if(row_comma_count > global_header_comma_count)
-            {
-              return -1;
-            }
-
-        }
-        else if(cur_char == 1023)
-        {
-          if(row_comma_count < global_header_comma_count)
+          char cpy = buf[cur_char];
+          printf("char: %c\n", cpy);
+          if (cpy == ',')
           {
-              return -1;
+            cur_char += 1;
+            row_comma_count += 1;
+            printf("row comma count is %d, char is %d\n", row_comma_count,cur_char);
+            printf("row count: %d\n", row_count);
+
+              if(row_comma_count > global_header_comma_count)
+              {
+                return -1;
+              }
+
+          }
+          else if(cur_char == 1023)
+          {
+            if(row_comma_count < global_header_comma_count)
+            {
+                return -1;
+            }
+          }
+
+          else
+          {
+            cur_char += 1;
           }
         }
 
-        else
-        {
-          cur_char += 1;
-        }
       }
-
-    }
-
 
   }
 
