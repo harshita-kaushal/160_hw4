@@ -13,6 +13,8 @@ struct USER_ARR
   int count_of_tweets;
 };
 
+int GLOBAL_FIELD_QUOTED[100] = {0};
+
 //can declare this within main
 struct USER_ARR *GLOBAL_USERS_ARR[MAX_FILE_SIZE];
 
@@ -70,7 +72,6 @@ int find_name_pos(char *file_csv)
 
 
 //right now, it checks for a consistent number of counts for each row 
-
 int processing_file(char *file_csv)
 {
 
@@ -84,7 +85,6 @@ int processing_file(char *file_csv)
 
   char buf[2048];
   int row_count = 0;
-  int field_count = 0;
 
   while (fgets(buf, 2048, csv_file))
   {
@@ -92,7 +92,7 @@ int processing_file(char *file_csv)
       return -1;
     }
 
-      field_count = 0;
+      
       row_count++;
       int comma_count = 0;
       int row_comma_count = 0;
@@ -100,50 +100,88 @@ int processing_file(char *file_csv)
       int cur_char = 0;
       while (cur_char < strlen(buf))
       {
-        bool first_comma = false;
-        //need to get global_comma_count
+        
+        //** case of header , will also retrieve global comma count
         if (row_count == 1)
         {
-          int first_comma_char = 0; 
-          bool quoted_beg = false;
-          bool quoted_end = false;
-          bool quoted_valid = false;
-          int second_comma_char = 0;
-          char cpy = buf[cur_char];
+            int field_count = 0;
+            int first_char = 0; 
+            int last_char = 0;
+            bool first_comma = false;
+            bool valid = false;
+            char cpy = buf[cur_char];
+          
+          //see comma
           if (cpy == ',')
           {
               global_header_comma_count += 1;
 
-              if (quoted_beg)
+              //case of beg of file since no commas have been seen 
+              if (!first_comma)
               {
-                second_comma_char = cur_char-=1;
-                char last_char = buf[second_comma_char];
-                if (last_char =="\"")
+                 first_comma = true;
+                 last_char = cur_char-=1;
+                   
+                //this is only when first_char is 0 
+                if ((buf[first_char] == "\"" && buf[last_char]  != "\"" )  || (buf[first_char] != "\"" & buf[last_char]  == "\"" ))
                 {
-                  quoted_end = true;
-                  quoted_valid = true;
+                    return -1;
+                  
                 }
 
-              }
-              else{
-                  first_comma_char = cur_char+=1;
-                  char first_char = buf[first_comma_char];
-                  if (first_char =="\"")
-                    {
-                      quoted_beg = true;
-                    }
+
                 
+                else if((buf[first_char] == "\"" && buf[last_char]  == "\"" ))
+                  {   
+                    valid = true;
+                    GLOBAL_FIELD_QUOTED[field_count] = 1;
+                    }
+
+               
+                else {
+
+                  valid = true;
+                  }
+                // to then look at the first char of the next field
+                first_char = last_char + 2;
+
+
               }
-            cur_char += 1;
-            printf("global_header_comma_count is %d\n", global_header_comma_count);
+
+              // encountering a second comman when first comma had been seen
+              else if (first_comma){
+
+                // character preceding closing comma
+                last_char = cur_char-=1;
+                
+                field_count +=1;    // increment for every field that we see
+
+
+                //valid case
+                if((buf[first_char] == "\"" & buf[last_char]  == "\"" )  || (buf[first_char] == "\"" & buf[last_char]  == "\"" ) )
+                  {  valid = true;}
+                 
+                 else  {return -1;}
+              
+
+                // to then look at the first char of the next field
+                first_char = last_char + 2;
+                  }
+
+            //increment index
+              cur_char += 1;
+              printf("global_header_comma_count is %d\n", global_header_comma_count);
           }
 
+          //when we don't see comma 
           else
           {
             cur_char += 1;
           }
 
         }
+
+        //for all other rows excluding header 
         else
         {
           char cpy = buf[cur_char];
