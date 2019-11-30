@@ -202,25 +202,24 @@ int processing_file(char *file_csv)
 
 
           if (row_comma_count ==global_name_pos){
-            name_first_char = first_char;
-            printf("Row %d, first_char : %d, is %c\n", row_count, first_char, buf[first_char]);
-           
+            name_first_char = first_char;           
           }
-
           if (row_comma_count==(global_name_pos+1)){
               name_last_char = last_char;
-              char name[name_last_char-name_first_char-1];
-              printf("9 COMMAS, first_char %d : %c, last_char %d : %c\n",first_char, buf[first_char],last_char, buf[last_char]);
-              
+              char name[name_last_char-name_first_char-1];              
               int name_index = 0; 
+              
               for (int k = name_first_char; k<=name_last_char; k++)
               {
-                  printf("buf[%d] is %c\n", k, buf[k]);
 
+                  printf("buf[%d] is %c\n", k, buf[k]);
+                  name[name_index] = buf[k];
+                  name_index++;
                 }
 
-              // for (int j = 0; j<strlen(name); j++)
-              // { printf("%c", name[j]);}
+              printf("name for row %d is :\n", row_count);
+              for (int j = 0; j<strlen(name); j++)
+              { printf("%c", name[j]);}
           
           }
 
