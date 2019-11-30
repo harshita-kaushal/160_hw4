@@ -75,13 +75,15 @@ int check_quotes(char* buf, int last_char, int first_char)
   if ((buf[first_char] == '\"' && buf[last_char]  != '\"' )  || (buf[first_char] != '\"' && buf[last_char]  == '\"' ))
   {
     printf("invalid quotes\n");
+    // for ( int i = 0; i < last_char; i++)
+    // {printf("GLOBAL_FIELD_QUOTED[%d] : %d\n",i,  GLOBAL_FIELD_QUOTED[i]);
+    // }
     return -1;
   }
 
   else if((buf[first_char] == '\"' && buf[last_char]  == '\"' ))
   {
     printf("field has quotes\n");
-    return 1;
   }
 
   else
@@ -91,11 +93,11 @@ int check_quotes(char* buf, int last_char, int first_char)
   }
 }
 
-//right now, it checks for a consistent number of counts for each row
+//right now, it checks for a consistent number of comma counts for each row
 int processing_file(char *file_csv)
 {
 
-  FILE *csv_file = fopen(file_csv, "r"); // "r" for read
+  FILE *csv_file = fopen(file_csv, "r");
 
   if (!csv_file)
   {
@@ -111,20 +113,15 @@ int processing_file(char *file_csv)
     if(strlen(buf) > 1024){
       return -1;
     }
-
-    int buf_length = strlen(buf)-1;
+    // int buf_length = strlen(buf)-1;
     //printf("String length: %d\n", buf_length);
-
+    
     row_count++;
-    int comma_count = 0;
     int row_comma_count = 0;
-
-    int cur_char = 0;
-
-    int field_count = 0;
+    int cur_char = 0;   //char index within line
+    int field_count = 0; // index in global array
     int first_char = 0;
     int last_char = 0;
-    bool first_comma = false;
     bool valid = false;
     int quote_status = 0;
 
@@ -193,6 +190,7 @@ int processing_file(char *file_csv)
 
           if(quote_status == -1 || (quote_status != GLOBAL_FIELD_QUOTED[field_count])){
              printf("Invalid quotes or does not match header\n");
+            //  printf("this is at row %d, char %d : %c\n",row_count, cur_char, buf[cur_char]);
              return -1;
           }
 
@@ -226,32 +224,30 @@ void find_names(char *file_csv){
 
   FILE *csv_file = fopen(file_csv, "r"); // "r" for read
 
+
   char buf[2048];
   int row_count = 0;
-
+  const char comma[2] = ",";
+  int field_count = 0; 
   while (fgets(buf, 2048, csv_file))
   {
-    char *field = strtok(buf, ",");
-    char *temp_field[1024] = NULL;
-
+    
+    row_count++;
+    int token_count = 0; 
+    char *field;
+    field = strtok(buf, comma);
+    char temp_field[1024];
     //if there are quotes, remove and then call add function
-    if(GLOBAL_FIELD_QUOTED[field_count] == 1)
-    {
-      for(int i = 1; i < ((strlen(field[global_name_pos])-1); i++){
-        temp_field[i] = field[global_name_pos][i];
-      }
-      //call add function
-    }
-    else //case where there are not quotes
-    {
-      //call add function
-    }
+      while( field != NULL ) {
+        printf( "%s\n", field);
+        token_count+=1;
+        field = strtok(NULL, comma);
+        
+        }
 
   }
-  return 0;
-
+  
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -259,7 +255,7 @@ int main(int argc, char *argv[])
   // char* file_name = argv[1];
 
   int res_find_row = find_name_pos(argv[1]);
-
+  printf("global name pos is %d\n", global_name_pos);
   int process_rest_file = processing_file(argv[1]);
   // printf("processing is taking a long time");
   //couldn't open file
@@ -269,6 +265,7 @@ int main(int argc, char *argv[])
     return 0;
   }
 
+  find_names(argv[1]);
   // printf("Name is at index %d\n", global_name_pos);
 
   return 0;
