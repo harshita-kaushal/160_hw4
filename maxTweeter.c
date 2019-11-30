@@ -228,19 +228,22 @@ void find_names(char *file_csv){
   char buf[2048];
   int row_count = 0;
   const char comma[2] = ",";
-  int field_count = 0; 
+  int field_count = 0;
   while (fgets(buf, 2048, csv_file))
   {
     
     row_count++;
+    field_count = 0; //reset field count
     int token_count = 0; 
     char *field;
     field = strtok(buf, comma);
     char temp_field[1024];
+
     //if there are quotes, remove and then call add function
       while( field != NULL ) {
-        printf( "%s\n", field);
+        printf( "field _count : %d; field : %s\n",field_count, field);
         token_count+=1;
+        field_count+=1;
         field = strtok(NULL, comma);
         
         }
