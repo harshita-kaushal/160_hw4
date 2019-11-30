@@ -1,4 +1,3 @@
-
 //basic text processing file for .c
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,7 +45,7 @@ int find_name_pos(char *file_csv)
     row_count++;
     char *field = strtok(buf, ",");
 
-    // this is for the first row
+    //this is for the first row
     //assuming that header is always row1
     while (field)
     {
@@ -70,6 +69,27 @@ int find_name_pos(char *file_csv)
   return global_name_pos;
 }
 
+//function used to check whether a field has quotes, no quotes, or are invalid
+int check_quotes(char* buf, int last_char, int first_char)
+{
+  if ((buf[first_char] == '\"' && buf[last_char]  != '\"' )  || (buf[first_char] != '\"' && buf[last_char]  == '\"' ))
+  {
+    printf("invalid quotes\n");
+    return -1;
+  }
+
+  else if((buf[first_char] == '\"' && buf[last_char]  == '\"' ))
+  {
+    printf("field has quotes\n");
+    return 1;
+  }
+
+  else
+  {
+    printf("field does not have quotes\n");
+    return 0;
+  }
+}
 
 //right now, it checks for a consistent number of counts for each row
 int processing_file(char *file_csv)
@@ -92,9 +112,8 @@ int processing_file(char *file_csv)
       return -1;
     }
 
-    //int buf_length = strlen(buf)-1;
+    int buf_length = strlen(buf)-1;
     //printf("String length: %d\n", buf_length);
-
 
     row_count++;
     int comma_count = 0;
@@ -107,6 +126,7 @@ int processing_file(char *file_csv)
     int last_char = 0;
     bool first_comma = false;
     bool valid = false;
+    int quote_status = 0;
 
     while (cur_char < strlen(buf))
     {
@@ -114,11 +134,6 @@ int processing_file(char *file_csv)
       //** case of header , will also retrieve global comma count
       if (row_count == 1)
       {
-        // int field_count = 0;
-        // int first_char = 0;
-        // int last_char = 0;
-        // bool first_comma = false;
-        // bool valid = false;
         char cpy = buf[cur_char];
 
         //see comma
@@ -128,34 +143,24 @@ int processing_file(char *file_csv)
 
           last_char = cur_char-1;
 
-          field_count +=1;    // increment for every field that we see
+          quote_status = check_quotes(buf,last_char,first_char);
 
-          //valid case
-          if ((buf[first_char] == '\"' && buf[last_char]  != '\"' )  || (buf[first_char] != '\"' && buf[last_char]  == '\"' ))
-          {
-            printf("invalid quotes\n");
+          if(quote_status == -1){
             return -1;
-
           }
-
-          else if((buf[first_char] == '\"' && buf[last_char]  == '\"' ))
-          {
+          else if(quote_status == 1){
             valid = true;
-            printf("field has quotes\n");
             GLOBAL_FIELD_QUOTED[field_count] = 1;
+            //printf("Field count array at %d: %d\n",field_count,GLOBAL_FIELD_QUOTED[field_count]);
           }
-
-
-          else {
-
-            printf("field does not have quotes\n");
+          else{
             valid = true;
           }
 
-          //increment index
+          field_count +=1;    // increment for every field that we see
           first_char = last_char + 2;
           cur_char += 1;
-          printf("global_header_comma_count is %d\n", global_header_comma_count);
+          //printf("global_header_comma_count is %d\n", global_header_comma_count);
         }
 
         //when we don't see comma
@@ -173,16 +178,27 @@ int processing_file(char *file_csv)
 
         if (cpy == ',')
         {
-          cur_char += 1;
           row_comma_count += 1;
-          //printf("row comma count is %d, char is %d\n", row_comma_count,cur_char);
-          //printf("row count: %d\n", row_count);
+
+          last_char = cur_char-1;
 
           if(row_comma_count > global_header_comma_count)
           {
-            printf("Too many fields\n");
             return -1;
           }
+
+          quote_status = check_quotes(buf,last_char,first_char);
+          //printf("row comma count is %d, char is %d\n", row_comma_count,cur_char);
+          //printf("row count: %d\n", row_count);
+
+          if(quote_status == -1 || (quote_status != GLOBAL_FIELD_QUOTED[field_count])){
+             printf("Invalid quotes or does not match header\n");
+             return -1;
+          }
+
+          field_count +=1;    // increment for every field that we see
+          first_char = last_char + 2;
+          cur_char += 1;
 
         }
         //TODO this error case no longer works but changing to strlen(buf)-1 causes program to hang
@@ -190,19 +206,16 @@ int processing_file(char *file_csv)
         {
           if(row_comma_count < global_header_comma_count)
           {
-            printf("Too few fields\n");
             return -1;
           }
         }
-
         else
         {
           cur_char += 1;
         }
+
       }
-
     }
-
   }
 
   return 0;
