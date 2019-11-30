@@ -221,6 +221,37 @@ int processing_file(char *file_csv)
   return 0;
 }
 
+//function to store usernames and counts in array of structs
+void find_names(char *file_csv){
+
+  FILE *csv_file = fopen(file_csv, "r"); // "r" for read
+
+  char buf[2048];
+  int row_count = 0;
+
+  while (fgets(buf, 2048, csv_file))
+  {
+    char *field = strtok(buf, ",");
+    char *temp_field[1024] = NULL;
+
+    //if there are quotes, remove and then call add function
+    if(GLOBAL_FIELD_QUOTED[field_count] == 1)
+    {
+      for(int i = 1; i < ((strlen(field[global_name_pos])-1); i++){
+        temp_field[i] = field[global_name_pos][i];
+      }
+      //call add function
+    }
+    else //case where there are not quotes
+    {
+      //call add function
+    }
+
+  }
+  return 0;
+
+}
+
 
 int main(int argc, char *argv[])
 {
