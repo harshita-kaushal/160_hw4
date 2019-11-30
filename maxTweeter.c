@@ -21,6 +21,7 @@ int global_name_pos = 0;
 int global_num_structs = 0;
 int global_header_comma_count = 0;
 
+char NAMES[7][1024]; 
 //finds position of name within the header (i.e first line of csv)
 int find_name_pos(char *file_csv)
 {
@@ -118,16 +119,18 @@ int processing_file(char *file_csv)
     
     row_count++;
     int row_comma_count = 0;
+    int name_first_char = 0; 
     int cur_char = 0;   //char index within line
     int field_count = 0; // index in global array
     int first_char = 0;
     int last_char = 0;
     bool valid = false;
     int quote_status = 0;
-
+    int name_pos = 0;
+   
     while (cur_char < strlen(buf))
     {
-
+      int name_last_char = 0; 
       //** case of header , will also retrieve global comma count
       if (row_count == 1)
       {
@@ -178,7 +181,6 @@ int processing_file(char *file_csv)
           row_comma_count += 1;
 
           last_char = cur_char-1;
-
           if(row_comma_count > global_header_comma_count)
           {
             return -1;
@@ -187,16 +189,43 @@ int processing_file(char *file_csv)
           quote_status = check_quotes(buf,last_char,first_char);
           //printf("row comma count is %d, char is %d\n", row_comma_count,cur_char);
           //printf("row count: %d\n", row_count);
-
           if(quote_status == -1 || (quote_status != GLOBAL_FIELD_QUOTED[field_count])){
              printf("Invalid quotes or does not match header\n");
             //  printf("this is at row %d, char %d : %c\n",row_count, cur_char, buf[cur_char]);
              return -1;
           }
 
+
           field_count +=1;    // increment for every field that we see
           first_char = last_char + 2;
           cur_char += 1;
+
+
+          if (row_comma_count ==global_name_pos){
+            name_first_char = first_char;
+            printf("Row %d, first_char : %d, is %c\n", row_count, first_char, buf[first_char]);
+           
+          }
+
+          if (row_comma_count==(global_name_pos+1)){
+              name_last_char = last_char;
+              char name[name_last_char-name_first_char-1];
+              printf("9 COMMAS, first_char %d : %c, last_char %d : %c\n",first_char, buf[first_char],last_char, buf[last_char]);
+              
+              int name_index = 0; 
+              for (int k = name_first_char; k<=name_last_char; k++)
+              {
+                  printf("buf[%d] is %c\n", k, buf[k]);
+
+                }
+
+              // for (int j = 0; j<strlen(name); j++)
+              // { printf("%c", name[j]);}
+          
+          }
+
+        
+
 
         }
         //TODO this error case no longer works but changing to strlen(buf)-1 causes program to hang
@@ -219,38 +248,15 @@ int processing_file(char *file_csv)
   return 0;
 }
 
-//function to store usernames and counts in array of structs
-void find_names(char *file_csv){
-
-  FILE *csv_file = fopen(file_csv, "r"); // "r" for read
 
 
-  char buf[2048];
-  int row_count = 0;
-  const char comma[2] = ",";
-  int field_count = 0;
-  while (fgets(buf, 2048, csv_file))
-  {
-    
-    row_count++;
-    field_count = 0; //reset field count
-    int token_count = 0; 
-    char *field;
-    field = strtok(buf, comma);
-    char temp_field[1024];
 
-    //if there are quotes, remove and then call add function
-      while( field != NULL ) {
-        printf( "field _count : %d; field : %s\n",field_count, field);
-        token_count+=1;
-        field_count+=1;
-        field = strtok(NULL, comma);
-        
-        }
 
-  }
-  
-}
+
+
+
+
+
 
 int main(int argc, char *argv[])
 {
@@ -268,7 +274,7 @@ int main(int argc, char *argv[])
     return 0;
   }
 
-  find_names(argv[1]);
+  // find_names(argv[1]);
   // printf("Name is at index %d\n", global_name_pos);
 
   return 0;
