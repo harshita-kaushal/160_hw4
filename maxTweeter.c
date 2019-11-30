@@ -71,7 +71,7 @@ int find_name_pos(char *file_csv)
 }
 
 
-//right now, it checks for a consistent number of counts for each row 
+//right now, it checks for a consistent number of counts for each row
 int processing_file(char *file_csv)
 {
 
@@ -92,128 +92,116 @@ int processing_file(char *file_csv)
       return -1;
     }
 
-      
-      row_count++;
-      int comma_count = 0;
-      int row_comma_count = 0;
-      
-      int cur_char = 0;
-      while (cur_char < strlen(buf))
+    //int buf_length = strlen(buf)-1;
+    //printf("String length: %d\n", buf_length);
+
+
+    row_count++;
+    int comma_count = 0;
+    int row_comma_count = 0;
+
+    int cur_char = 0;
+
+    int field_count = 0;
+    int first_char = 0;
+    int last_char = 0;
+    bool first_comma = false;
+    bool valid = false;
+
+    while (cur_char < strlen(buf))
+    {
+
+      //** case of header , will also retrieve global comma count
+      if (row_count == 1)
       {
-        
-        //** case of header , will also retrieve global comma count
-        if (row_count == 1)
+        // int field_count = 0;
+        // int first_char = 0;
+        // int last_char = 0;
+        // bool first_comma = false;
+        // bool valid = false;
+        char cpy = buf[cur_char];
+
+        //see comma
+        if (cpy == ',')
         {
-            int field_count = 0;
-            int first_char = 0; 
-            int last_char = 0;
-            bool first_comma = false;
-            bool valid = false;
-            char cpy = buf[cur_char];
-          
-          //see comma
-          if (cpy == ',')
+          global_header_comma_count += 1;
+
+          last_char = cur_char-1;
+
+          field_count +=1;    // increment for every field that we see
+
+          //valid case
+          if ((buf[first_char] == '\"' && buf[last_char]  != '\"' )  || (buf[first_char] != '\"' && buf[last_char]  == '\"' ))
           {
-              global_header_comma_count += 1;
+            printf("invalid quotes\n");
+            return -1;
 
-              //case of beg of file since no commas have been seen 
-              if (!first_comma)
-              {
-                 first_comma = true;
-                 last_char = cur_char-=1;
-                   
-                //this is only when first_char is 0 
-                if ((buf[first_char] == "\"" && buf[last_char]  != "\"" )  || (buf[first_char] != "\"" & buf[last_char]  == "\"" ))
-                {
-                    return -1;
-                  
-                }
-
-
-                
-                else if((buf[first_char] == "\"" && buf[last_char]  == "\"" ))
-                  {   
-                    valid = true;
-                    GLOBAL_FIELD_QUOTED[field_count] = 1;
-                    }
-
-               
-                else {
-
-                  valid = true;
-                  }
-                // to then look at the first char of the next field
-                first_char = last_char + 2;
-
-
-              }
-
-              // encountering a second comman when first comma had been seen
-              else if (first_comma){
-
-                // character preceding closing comma
-                last_char = cur_char-=1;
-                
-                field_count +=1;    // increment for every field that we see
-
-
-                //valid case
-                if((buf[first_char] == "\"" & buf[last_char]  == "\"" )  || (buf[first_char] == "\"" & buf[last_char]  == "\"" ) )
-                  {  valid = true;}
-                 
-                 else  {return -1;}
-              
-
-                // to then look at the first char of the next field
-                first_char = last_char + 2;
-                  }
-
-            //increment index
-              cur_char += 1;
-              printf("global_header_comma_count is %d\n", global_header_comma_count);
           }
 
-          //when we don't see comma 
-          else
+          else if((buf[first_char] == '\"' && buf[last_char]  == '\"' ))
           {
-            cur_char += 1;
+            valid = true;
+            printf("field has quotes\n");
+            GLOBAL_FIELD_QUOTED[field_count] = 1;
           }
 
+
+          else {
+
+            printf("field does not have quotes\n");
+            valid = true;
+          }
+
+          //increment index
+          first_char = last_char + 2;
+          cur_char += 1;
+          printf("global_header_comma_count is %d\n", global_header_comma_count);
         }
 
-        //for all other rows excluding header 
+        //when we don't see comma
         else
         {
-          char cpy = buf[cur_char];
-          printf("char: %c\n", cpy);
-          if (cpy == ',')
-          {
-            cur_char += 1;
-            row_comma_count += 1;
-            printf("row comma count is %d, char is %d\n", row_comma_count,cur_char);
-            printf("row count: %d\n", row_count);
-
-              if(row_comma_count > global_header_comma_count)
-              {
-                return -1;
-              }
-
-          }
-          else if(cur_char == 1023)
-          {
-            if(row_comma_count < global_header_comma_count)
-            {
-                return -1;
-            }
-          }
-
-          else
-          {
-            cur_char += 1;
-          }
+          cur_char += 1;
         }
 
       }
+
+      //for all other rows excluding header
+      else
+      {
+        char cpy = buf[cur_char];
+
+        if (cpy == ',')
+        {
+          cur_char += 1;
+          row_comma_count += 1;
+          //printf("row comma count is %d, char is %d\n", row_comma_count,cur_char);
+          //printf("row count: %d\n", row_count);
+
+          if(row_comma_count > global_header_comma_count)
+          {
+            printf("Too many fields\n");
+            return -1;
+          }
+
+        }
+        //TODO this error case no longer works but changing to strlen(buf)-1 causes program to hang
+        else if(cur_char == 1023)
+        {
+          if(row_comma_count < global_header_comma_count)
+          {
+            printf("Too few fields\n");
+            return -1;
+          }
+        }
+
+        else
+        {
+          cur_char += 1;
+        }
+      }
+
+    }
 
   }
 
