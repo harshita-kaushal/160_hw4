@@ -170,7 +170,7 @@ int processing_file(char *file_csv)
 
       }
 
-      //for all other rows excluding header
+      //**for all other rows excluding header
       else
       {
         char cpy = buf[cur_char];
@@ -215,6 +215,17 @@ int processing_file(char *file_csv)
         }
 
       }
+    }
+
+
+    //** fields in this row are fewer than the number of fields in the header
+    if (cur_char==strlen(buf)){
+       
+       if(row_comma_count < global_header_comma_count)
+          {
+            printf("row count is %d\n", row_count);
+            return -1;
+          }
     }
   }
 
