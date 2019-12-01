@@ -10,12 +10,14 @@ struct USER_ARR
 {
   char twitter_username[MAX_LINE_LEN]; //clarify later
   int count_of_tweets;
+  int unique_id;
 };
 
 int GLOBAL_FIELD_QUOTED[100] = {0};
 
 //can declare this within main
 struct USER_ARR GLOBAL_USERS_ARR[MAX_FILE_SIZE];
+struct USER_ARR GLOBAL_TOP_TEN[10];
 
 int global_name_pos = 0;
 int global_header_comma_count = 0;
@@ -240,6 +242,8 @@ void add_to_struct(char* username, int index){
     }
 
     GLOBAL_USERS_ARR[unique_user_count].count_of_tweets = 1;
+    GLOBAL_USERS_ARR[unique_user_count].unique_id = unique_user_count;
+
     unique_user_count++;
   }
   else
@@ -326,6 +330,68 @@ void find_names(char *file_csv){
   }
 }
 
+void print_top_ten(){
+
+  int min = GLOBAL_USERS_ARR[0].count_of_tweets;
+  int index_of_min = 0;
+
+  //put first ten users in array
+  for(int i = 0; i < 10; i++){
+
+    GLOBAL_TOP_TEN[i].count_of_tweets = GLOBAL_USERS_ARR[i].count_of_tweets;
+    GLOBAL_TOP_TEN[i].unique_id = GLOBAL_USERS_ARR[i].unique_id;
+
+    if(GLOBAL_USERS_ARR[i].count_of_tweets < min){
+      min = GLOBAL_USERS_ARR[i].count_of_tweets;
+      index_of_min = i;
+    }
+  }
+
+  for(int i = 10; i < unique_user_count; i++){
+    if(GLOBAL_USERS_ARR[i].count_of_tweets > min){
+
+      GLOBAL_TOP_TEN[index_of_min].count_of_tweets = GLOBAL_USERS_ARR[i].count_of_tweets;
+      GLOBAL_TOP_TEN[index_of_min].unique_id = GLOBAL_USERS_ARR[i].unique_id;
+      min = GLOBAL_USERS_ARR[i].count_of_tweets;
+    }
+    for(int j = 0; j < 10; j++){
+      if(GLOBAL_USERS_ARR[i].count_of_tweets < min){
+        min = GLOBAL_USERS_ARR[i].count_of_tweets;
+        index_of_min = i;
+      }
+    }
+  }
+
+  //sort top ten
+  for (int i = 0; i < 10; i++)
+  {
+    for (int j = i + 1; j < 10; j++)
+    {
+      if (GLOBAL_TOP_TEN[i].count_of_tweets < GLOBAL_TOP_TEN[j].count_of_tweets)
+      {
+        int temp_count = GLOBAL_TOP_TEN[i].count_of_tweets;
+        GLOBAL_TOP_TEN[i].count_of_tweets = GLOBAL_TOP_TEN[j].count_of_tweets;
+        GLOBAL_TOP_TEN[j].count_of_tweets = temp_count;
+
+        int temp_id = GLOBAL_TOP_TEN[i].unique_id;
+        GLOBAL_TOP_TEN[i].unique_id = GLOBAL_TOP_TEN[j].unique_id;
+        GLOBAL_TOP_TEN[j].unique_id = temp_id;
+      }
+    }
+  }
+
+//print each entry
+  for(int i = 0; i < 10; i++){
+    int original_index = GLOBAL_TOP_TEN[i].unique_id;
+
+    for(int j = 0; j < strlen(GLOBAL_USERS_ARR[original_index].twitter_username); j++){
+      printf("%c",GLOBAL_USERS_ARR[original_index].twitter_username[j]);
+    }
+    printf(": %d\n",GLOBAL_USERS_ARR[original_index].count_of_tweets);
+  }
+
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -341,6 +407,8 @@ int main(int argc, char *argv[])
   }
 
   find_names(argv[1]);
+
+  print_top_ten();
 
   // for(int j=0; j < unique_user_count;j++){
   //   printf("twitter username: ");
