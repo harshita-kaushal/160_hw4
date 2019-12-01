@@ -347,6 +347,7 @@ void print_top_ten(){
     }
   }
 
+  //check remaining usernames against the current minimum
   for(int i = 10; i < unique_user_count; i++){
     if(GLOBAL_USERS_ARR[i].count_of_tweets > min){
 
@@ -354,15 +355,16 @@ void print_top_ten(){
       GLOBAL_TOP_TEN[index_of_min].unique_id = GLOBAL_USERS_ARR[i].unique_id;
       min = GLOBAL_USERS_ARR[i].count_of_tweets;
     }
+    //update min if necessary
     for(int j = 0; j < 10; j++){
-      if(GLOBAL_USERS_ARR[i].count_of_tweets < min){
-        min = GLOBAL_USERS_ARR[i].count_of_tweets;
-        index_of_min = i;
+      if(GLOBAL_USERS_ARR[j].count_of_tweets < min){
+        min = GLOBAL_USERS_ARR[j].count_of_tweets;
+        index_of_min = j;
       }
     }
   }
 
-  //sort top ten
+  //sort top ten in temp array
   for (int i = 0; i < 10; i++)
   {
     for (int j = i + 1; j < 10; j++)
@@ -380,7 +382,7 @@ void print_top_ten(){
     }
   }
 
-//print each entry
+//print each entry from USER_ARR with corresponding index from temp TOP_TEN array
   for(int i = 0; i < 10; i++){
     int original_index = GLOBAL_TOP_TEN[i].unique_id;
 
