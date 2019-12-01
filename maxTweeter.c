@@ -21,7 +21,6 @@ int global_name_pos = 0;
 int global_num_structs = 0;
 int global_header_comma_count = 0;
 
-char NAMES[7][1024]; 
 //finds position of name within the header (i.e first line of csv)
 int find_name_pos(char *file_csv)
 {
@@ -75,30 +74,28 @@ int check_quotes(char* buf, int last_char, int first_char)
 {
   if ((buf[first_char] == '\"' && buf[last_char]  != '\"' )  || (buf[first_char] != '\"' && buf[last_char]  == '\"' ))
   {
-    printf("invalid quotes\n");
-    // for ( int i = 0; i < last_char; i++)
-    // {printf("GLOBAL_FIELD_QUOTED[%d] : %d\n",i,  GLOBAL_FIELD_QUOTED[i]);
-    // }
+    //printf("invalid quotes\n");
     return -1;
   }
 
   else if((buf[first_char] == '\"' && buf[last_char]  == '\"' ))
   {
-    printf("field has quotes\n");
+    //printf("field has quotes\n");
+    return 1;
   }
 
   else
   {
-    printf("field does not have quotes\n");
+    //printf("field does not have quotes\n");
     return 0;
   }
 }
 
-//right now, it checks for a consistent number of comma counts for each row
+//right now, it checks for a consistent number of counts for each row
 int processing_file(char *file_csv)
 {
 
-  FILE *csv_file = fopen(file_csv, "r");
+  FILE *csv_file = fopen(file_csv, "r"); // "r" for read
 
   if (!csv_file)
   {
@@ -114,23 +111,26 @@ int processing_file(char *file_csv)
     if(strlen(buf) > 1024){
       return -1;
     }
-    // int buf_length = strlen(buf)-1;
+
+    int buf_length = strlen(buf)-1;
     //printf("String length: %d\n", buf_length);
-    
+
     row_count++;
+    int comma_count = 0;
     int row_comma_count = 0;
-    int name_first_char = 0; 
-    int cur_char = 0;   //char index within line
-    int field_count = 0; // index in global array
+
+    int cur_char = 0;
+
+    int field_count = 0;
     int first_char = 0;
     int last_char = 0;
+    bool first_comma = false;
     bool valid = false;
     int quote_status = 0;
-    int name_pos = 0;
-   
+
     while (cur_char < strlen(buf))
     {
-      int name_last_char = 0; 
+
       //** case of header , will also retrieve global comma count
       if (row_count == 1)
       {
@@ -181,6 +181,7 @@ int processing_file(char *file_csv)
           row_comma_count += 1;
 
           last_char = cur_char-1;
+
           if(row_comma_count > global_header_comma_count)
           {
             return -1;
@@ -189,43 +190,16 @@ int processing_file(char *file_csv)
           quote_status = check_quotes(buf,last_char,first_char);
           //printf("row comma count is %d, char is %d\n", row_comma_count,cur_char);
           //printf("row count: %d\n", row_count);
+
           if(quote_status == -1 || (quote_status != GLOBAL_FIELD_QUOTED[field_count])){
-             printf("Invalid quotes or does not match header\n");
-            //  printf("this is at row %d, char %d : %c\n",row_count, cur_char, buf[cur_char]);
+            printf("row count: %d\n", row_count);
+            printf("Invalid quotes or does not match header\n");
              return -1;
           }
-
 
           field_count +=1;    // increment for every field that we see
           first_char = last_char + 2;
           cur_char += 1;
-
-
-          if (row_comma_count ==global_name_pos){
-            name_first_char = first_char;           
-          }
-          if (row_comma_count==(global_name_pos+1)){
-              name_last_char = last_char;
-              char name[name_last_char-name_first_char-1];              
-              int name_index = 0; 
-              
-              for (int k = name_first_char; k<=name_last_char; k++)
-              {
-                  name[name_index] = buf[k];
-                  printf("buf[%d] is %c, name[%d] is %c\n", k, buf[k], name_index, name[name_index]);
-                  // printf("name[%d] is %c\n", name_index, name[name_index]);
-                  name_index++;
-                }
-
-              printf("name for row %d is :\n", row_count);
-              for (int j = 0; j<strlen(name); j++)
-              { printf("%c", name[j]);}
-          
-              printf("\n");
-          }
-
-        
-
 
         }
         //TODO this error case no longer works but changing to strlen(buf)-1 causes program to hang
@@ -248,14 +222,86 @@ int processing_file(char *file_csv)
   return 0;
 }
 
+//function to store usernames and counts in array of structs
+void find_names(char *file_csv){
 
+  FILE *csv_file = fopen(file_csv, "r"); // "r" for read
 
+  char buf[2048];
+  int row_count = 0;
 
+  while (fgets(buf, 2048, csv_file))
+  {
+    int buf_length = strlen(buf)-1;
+    //printf("String length: %d\n", buf_length);
 
+    row_count++;
+    int row_comma_count = 0;
 
+    int cur_char = 0;
 
+    int first_char = 0;
+    int last_char = 0;
 
+    while (cur_char < strlen(buf))
+    {
+      //** case of header , will also retrieve global comma count
+      if (row_count > 1)
+      {
+        char cpy = buf[cur_char];
 
+        //see comma
+        if (cpy == ',')
+        {
+          last_char = cur_char-1;
+
+          if(row_comma_count == global_name_pos)
+          {
+            printf("name: ");
+            for(int i = first_char; i < last_char; i++)
+            {
+              printf("%c",buf[i]);
+            }
+
+            printf("\n");
+          }
+
+          first_char = last_char + 2;
+          cur_char += 1;
+          row_comma_count++;
+        }
+        //when we don't see comma
+        else
+        {
+          cur_char += 1;
+        }
+
+      }
+      else{
+        break;
+      }
+    }
+
+    //printf("name pos: %d\n",global_name_pos);
+
+    //printf("name: %c\n",field[global_name_pos]);
+
+    //if there are quotes, remove and then call add function
+    // if(GLOBAL_FIELD_QUOTED[field_count] == 1)
+    // {
+    //   for(int i = 1; i < ((strlen(field[global_name_pos])-1); i++){
+    //     temp_field[i] = field[global_name_pos][i];
+    //   }
+    //   //call add function
+    // }
+    // else //case where there are not quotes
+    // {
+    //   //call add function
+    // }
+
+  }
+
+}
 
 
 int main(int argc, char *argv[])
@@ -264,8 +310,9 @@ int main(int argc, char *argv[])
   // char* file_name = argv[1];
 
   int res_find_row = find_name_pos(argv[1]);
-  printf("global name pos is %d\n", global_name_pos);
+
   int process_rest_file = processing_file(argv[1]);
+
   // printf("processing is taking a long time");
   //couldn't open file
   if (res_find_row == -1 || process_rest_file == -1)
@@ -274,7 +321,8 @@ int main(int argc, char *argv[])
     return 0;
   }
 
-  // find_names(argv[1]);
+  find_names(argv[1]);
+
   // printf("Name is at index %d\n", global_name_pos);
 
   return 0;
