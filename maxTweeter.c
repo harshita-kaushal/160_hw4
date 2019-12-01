@@ -211,9 +211,9 @@ int processing_file(char *file_csv)
               
               for (int k = name_first_char; k<=name_last_char; k++)
               {
-
-                  printf("buf[%d] is %c\n", k, buf[k]);
                   name[name_index] = buf[k];
+                  printf("buf[%d] is %c, name[%d] is %c\n", k, buf[k], name_index, name[name_index]);
+                  // printf("name[%d] is %c\n", name_index, name[name_index]);
                   name_index++;
                 }
 
@@ -221,6 +221,7 @@ int processing_file(char *file_csv)
               for (int j = 0; j<strlen(name); j++)
               { printf("%c", name[j]);}
           
+              printf("\n");
           }
 
         
