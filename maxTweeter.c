@@ -93,7 +93,7 @@ int check_quotes(char* buf, int last_char, int first_char)
   }
 }
 
-//right now, it checks for a consistent number of counts for each row
+//right now, it checks for a consistent number of comma counts for each row
 int processing_file(char *file_csv)
 {
 
@@ -114,6 +114,7 @@ int processing_file(char *file_csv)
       return -1;
     }
 
+    
     row_count++;
     //int comma_count = 0;
     int row_comma_count = 0;
@@ -174,7 +175,6 @@ int processing_file(char *file_csv)
       else
       {
         char cpy = buf[cur_char];
-
         if (cpy == ',')
         {
           row_comma_count += 1;
@@ -208,6 +208,8 @@ int processing_file(char *file_csv)
           {
             return -1;
           }
+         cur_char+=1;
+
         }
         else
         {
@@ -218,15 +220,6 @@ int processing_file(char *file_csv)
     }
 
 
-    //** fields in this row are fewer than the number of fields in the header
-    if (cur_char==strlen(buf)){
-       
-       if(row_comma_count < global_header_comma_count)
-          {
-            printf("row count is %d\n", row_count);
-            return -1;
-          }
-    }
   }
 
   return 0;
@@ -358,22 +351,30 @@ void print_top_ten(){
     }
   }
 
+
   //check remaining usernames against the current minimum
   for(int i = 10; i < unique_user_count; i++){
+    
     if(GLOBAL_USERS_ARR[i].count_of_tweets > min){
-
+      
       GLOBAL_TOP_TEN[index_of_min].count_of_tweets = GLOBAL_USERS_ARR[i].count_of_tweets;
       GLOBAL_TOP_TEN[index_of_min].unique_id = GLOBAL_USERS_ARR[i].unique_id;
+      
+      // printf("GLOBAL TOP TEN[%d]: %d tweets, %d\n", index_of_min, GLOBAL_TOP_TEN[index_of_min].count_of_tweets , 
+          // GLOBAL_USERS_ARR[i].unique_id);
       min = GLOBAL_USERS_ARR[i].count_of_tweets;
     }
     //update min if necessary
     for(int j = 0; j < 10; j++){
-      if(GLOBAL_USERS_ARR[j].count_of_tweets < min){
-        min = GLOBAL_USERS_ARR[j].count_of_tweets;
+      // printf("min iteration is %d\n", min);
+      if(GLOBAL_TOP_TEN[j].count_of_tweets < min){
+        min = GLOBAL_TOP_TEN[j].count_of_tweets;
         index_of_min = j;
+        // printf("reset min to be %d \n", min);
       }
     }
-  }
+ 
+ }
 
   //sort top ten in temp array
   for (int i = 0; i < 10; i++)
@@ -428,7 +429,8 @@ int main(int argc, char *argv[])
   //   for(int i=0; i < strlen(GLOBAL_USERS_ARR[j].twitter_username); i++){
   //     printf("%c",GLOBAL_USERS_ARR[j].twitter_username[i]);
   //   }
-  //   printf("\n");
+  //   printf(", Num of tweets: %d\n",GLOBAL_USERS_ARR[j].count_of_tweets);
+
   // }
 
   return 0;
