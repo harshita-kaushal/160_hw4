@@ -15,11 +15,11 @@ struct USER_ARR
 int GLOBAL_FIELD_QUOTED[100] = {0};
 
 //can declare this within main
-struct USER_ARR *GLOBAL_USERS_ARR[MAX_FILE_SIZE];
+struct USER_ARR GLOBAL_USERS_ARR[MAX_FILE_SIZE];
 
 int global_name_pos = 0;
-int global_num_structs = 0;
 int global_header_comma_count = 0;
+int unique_user_count = 0;
 
 //finds position of name within the header (i.e first line of csv)
 int find_name_pos(char *file_csv)
@@ -72,21 +72,21 @@ int find_name_pos(char *file_csv)
 //function used to check whether a field has quotes, no quotes, or are invalid
 int check_quotes(char* buf, int last_char, int first_char)
 {
+  //invalid quotes
   if ((buf[first_char] == '\"' && buf[last_char]  != '\"' )  || (buf[first_char] != '\"' && buf[last_char]  == '\"' ))
   {
-    //printf("invalid quotes\n");
     return -1;
   }
 
+  //field has quotes
   else if((buf[first_char] == '\"' && buf[last_char]  == '\"' ))
   {
-    //printf("field has quotes\n");
     return 1;
   }
 
+  //field has no quotes
   else
   {
-    //printf("field does not have quotes\n");
     return 0;
   }
 }
@@ -112,11 +112,8 @@ int processing_file(char *file_csv)
       return -1;
     }
 
-    int buf_length = strlen(buf)-1;
-    //printf("String length: %d\n", buf_length);
-
     row_count++;
-    int comma_count = 0;
+    //int comma_count = 0;
     int row_comma_count = 0;
 
     int cur_char = 0;
@@ -124,7 +121,7 @@ int processing_file(char *file_csv)
     int field_count = 0;
     int first_char = 0;
     int last_char = 0;
-    bool first_comma = false;
+    //bool first_comma = false;
     bool valid = false;
     int quote_status = 0;
 
@@ -194,7 +191,7 @@ int processing_file(char *file_csv)
           if(quote_status == -1 || (quote_status != GLOBAL_FIELD_QUOTED[field_count])){
             printf("row count: %d\n", row_count);
             printf("Invalid quotes or does not match header\n");
-             return -1;
+            return -1;
           }
 
           field_count +=1;    // increment for every field that we see
@@ -222,6 +219,35 @@ int processing_file(char *file_csv)
   return 0;
 }
 
+//function searches array of structs for a particular username, returns index if existing
+int struct_match_search(char* username){
+
+  for(int index = 0; index < unique_user_count; index++){
+    if(strcmp(GLOBAL_USERS_ARR[index].twitter_username, username) == 0){
+      return index;
+    }
+  }
+  return -1;
+}
+
+//function adds username to struct if not existing or creates new entry
+void add_to_struct(char* username, int index){
+
+  if(index == -1){
+    for(int i = 0; i < strlen(username);i++)
+    {
+      GLOBAL_USERS_ARR[unique_user_count].twitter_username[i] = username[i];
+    }
+
+    GLOBAL_USERS_ARR[unique_user_count].count_of_tweets = 1;
+    unique_user_count++;
+  }
+  else
+  {
+    GLOBAL_USERS_ARR[index].count_of_tweets +=1;
+  }
+}
+
 //function to store usernames and counts in array of structs
 void find_names(char *file_csv){
 
@@ -232,24 +258,25 @@ void find_names(char *file_csv){
 
   while (fgets(buf, 2048, csv_file))
   {
-    int buf_length = strlen(buf)-1;
-    //printf("String length: %d\n", buf_length);
-
     row_count++;
     int row_comma_count = 0;
 
     int cur_char = 0;
 
+    int field_count = 0;
     int first_char = 0;
     int last_char = 0;
+    int ret_val = 0;
+
+    //char temp_field[1023]; //TODO check whether size of 1023 is okay
 
     while (cur_char < strlen(buf))
     {
+      char temp_field[1023] = {"\0"};
       //** case of header , will also retrieve global comma count
       if (row_count > 1)
       {
         char cpy = buf[cur_char];
-
         //see comma
         if (cpy == ',')
         {
@@ -257,64 +284,56 @@ void find_names(char *file_csv){
 
           if(row_comma_count == global_name_pos)
           {
-            printf("name: ");
-            for(int i = first_char; i < last_char; i++)
+            if(GLOBAL_FIELD_QUOTED[field_count] == 1)
             {
-              printf("%c",buf[i]);
+              int j = 0;
+              for(int i = first_char+1; i < last_char-1; i++){
+                temp_field[i] = buf[i];
+                j++;
+              }
+              add_to_struct(temp_field, struct_match_search(temp_field)); //call add function
             }
-
-            printf("\n");
+            else //case where there are not quotes
+            {
+              //printf("name: ");
+              int j = 0;
+              for(int i = first_char; i <= last_char; i++){
+                temp_field[j] = buf[i];
+                //printf("%c",temp_field[j]);
+                j++;
+              }
+              //printf("\n");
+              ret_val = struct_match_search(temp_field);
+              add_to_struct(temp_field, ret_val); //call add function
+            }
           }
 
           first_char = last_char + 2;
           cur_char += 1;
           row_comma_count++;
+          field_count ++;
         }
         //when we don't see comma
         else
         {
           cur_char += 1;
         }
-
       }
       else{
         break;
       }
     }
-
-    //printf("name pos: %d\n",global_name_pos);
-
-    //printf("name: %c\n",field[global_name_pos]);
-
-    //if there are quotes, remove and then call add function
-    // if(GLOBAL_FIELD_QUOTED[field_count] == 1)
-    // {
-    //   for(int i = 1; i < ((strlen(field[global_name_pos])-1); i++){
-    //     temp_field[i] = field[global_name_pos][i];
-    //   }
-    //   //call add function
-    // }
-    // else //case where there are not quotes
-    // {
-    //   //call add function
-    // }
-
   }
-
 }
 
 
 int main(int argc, char *argv[])
 {
-
-  // char* file_name = argv[1];
-
   int res_find_row = find_name_pos(argv[1]);
 
   int process_rest_file = processing_file(argv[1]);
 
-  // printf("processing is taking a long time");
-  //couldn't open file
+  //invalid file check
   if (res_find_row == -1 || process_rest_file == -1)
   {
     printf("Invalid Input Format");
@@ -323,7 +342,13 @@ int main(int argc, char *argv[])
 
   find_names(argv[1]);
 
-  // printf("Name is at index %d\n", global_name_pos);
+  // for(int j=0; j < unique_user_count;j++){
+  //   printf("twitter username: ");
+  //   for(int i=0; i < strlen(GLOBAL_USERS_ARR[j].twitter_username); i++){
+  //     printf("%c",GLOBAL_USERS_ARR[j].twitter_username[i]);
+  //   }
+  //   printf("\n");
+  // }
 
   return 0;
 }
