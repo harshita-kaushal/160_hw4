@@ -8,7 +8,7 @@
 
 struct USER_ARR
 {
-  char twitter_username[MAX_LINE_LEN]; //clarify later
+  char twitter_username[MAX_LINE_LEN];
   int count_of_tweets;
   int unique_id;
 };
@@ -22,16 +22,13 @@ int global_name_pos = 0;
 int global_header_comma_count = 0;
 int unique_user_count = 0;
 
-//finds position of name within the header 
+//finds position of name within the header
 int find_name_pos(char *file_csv)
 {
 
   FILE *csv_file = fopen(file_csv, "r"); // "r" for read
 
-  if (!csv_file)
-  { printf("Can't open file\n");
-    return -1;
-  }
+  if (!csv_file){return -1;}
 
   char buf[1024];
   int row_count = 0;
@@ -43,19 +40,19 @@ int find_name_pos(char *file_csv)
     field_count = 0;
     row_count++;
 
-      //in the case that name is found twice in the header
-      if (row_count ==1)
-      {   
-        char *ptr = strstr(buf, "name");
-        if (ptr !=NULL)
+    //in the case that name is found twice in the header
+    if (row_count ==1)
+    {
+      char *ptr = strstr(buf, "name");
+      if (ptr !=NULL)
+      {
+        char *ptr_to_second_name = strstr(ptr+1, "name");
+
+        if (ptr_to_second_name!= NULL)
         {
-          char *ptr_to_second_name = strstr(ptr+1, "name");
-          
-          if (ptr_to_second_name!= NULL)
-            {
-              return -1;
-            }
+          return -1;
         }
+      }
     }
 
     char *field = strtok(buf, ",");
@@ -103,11 +100,11 @@ int check_quotes(char* buf, int last_char, int first_char)
 
 
 /* @arg file_csv : the file passed into the command line
-  *processing_file() checks  
-          *consistent number of commas across the whole file (returns invalid if too few or too many)
-          *index out of bounds errors  (i.e if file length>20k, line length > 1024 )
-          *presence of new line character within fields   
-  returns 0 if sucessful and if file is completely valid    */
+*processing_file() checks
+*consistent number of commas across the whole file (returns invalid if too few or too many)
+*index out of bounds errors  (i.e if file length>20k, line length > 1024 )
+*presence of new line character within fields
+returns 0 if sucessful and if file is completely valid    */
 int processing_file(char *file_csv)
 {
 
@@ -130,12 +127,10 @@ int processing_file(char *file_csv)
     int buf_length = strlen(buf);
 
     if (row_count > MAX_FILE_SIZE){
-      // printf("row count %d is more than 20k\n", row_count);
       return-1;
     }
-    
+
     row_count++;
-    //int comma_count = 0;
     int row_comma_count = 0;
 
     int cur_char = 0;
@@ -143,14 +138,11 @@ int processing_file(char *file_csv)
     int field_count = 0;
     int first_char = 0;
     int last_char = 0;
-    //bool first_comma = false;
     bool valid = false;
     int quote_status = 0;
 
     while (cur_char < strlen(buf))
     {
-
-
       //** case of header , will also retrieve global comma count
       if (row_count == 1)
       {
@@ -171,7 +163,6 @@ int processing_file(char *file_csv)
           else if(quote_status == 1){
             valid = true;
             GLOBAL_FIELD_QUOTED[field_count] = 1;
-            //printf("Field count array at %d: %d\n",field_count,GLOBAL_FIELD_QUOTED[field_count]);
           }
           else{
             valid = true;
@@ -180,21 +171,18 @@ int processing_file(char *file_csv)
           field_count +=1;    // increment for every field that we see
           first_char = last_char + 2;
           cur_char += 1;
-          //printf("global_header_comma_count is %d\n", global_header_comma_count);
         }
 
         //when we don't see comma
         else
         {
-          if (cpy =='\n' && (cur_char != (buf_length -1))){ 
-            // printf("row count : %d ; cur char is %d\n", row_count, cur_char);
-            // printf("buf[%d]: %c %c", cur_char, cpy, buf[cur_char]);
+          if (cpy =='\n' && (cur_char != (buf_length -1))){
             return -1;
           }
 
           cur_char += 1;
-          }
-        
+        }
+
       }
 
       //**for all other rows excluding header
@@ -216,7 +204,6 @@ int processing_file(char *file_csv)
           quote_status = check_quotes(buf,last_char,first_char);
 
           if(quote_status == -1 || (quote_status != GLOBAL_FIELD_QUOTED[field_count])){
-            printf("Invalid quotes or does not match header\n");
             return -1;
           }
 
@@ -225,32 +212,30 @@ int processing_file(char *file_csv)
           cur_char += 1;
 
         }
-        
+
         else if(cur_char == (buf_length-1))
         {
           if(row_comma_count < global_header_comma_count)
           {
             return -1;
           }
-         cur_char+=1;
+          cur_char+=1;
 
         }
         else
         {
-         if (cpy =='\n' && (cur_char != (buf_length -1))) { 
-              // printf("row count : %d ; cur char is %d\n", row_count, cur_char);
-              return -1;
+          if (cpy =='\n' && (cur_char != (buf_length -1))) {
+            return -1;
           }
           cur_char += 1;
 
         }
-       
+
       }
     }
 
 
   }
-  // printf("row comma count is: %d\n", row_count);
   return 0;
 }
 
@@ -330,7 +315,7 @@ void find_names(char *file_csv){
             }
             else //case where there are not quotes
             {
-             
+
               int j = 0;
               for(int i = first_char; i <= last_char; i++){
                 temp_field[j] = buf[i];
@@ -346,7 +331,7 @@ void find_names(char *file_csv){
           row_comma_count++;
           field_count ++;
         }
-        
+
         //** when we don't see comma
         else
         {
@@ -362,91 +347,111 @@ void find_names(char *file_csv){
 
 
 
-/* args:none, returns: none 
+/* args:none, returns: none
 function prints the array of structs with the top ten tweeters */
 void print_top_ten(){
 
   int min = GLOBAL_USERS_ARR[0].count_of_tweets;
   int index_of_min = 0;
+  int printing_index = 10;
 
-  //** put first ten users in array
-  for(int i = 0; i < 10; i++){
+  //** if there are <= 10 users, put all users in a temporary array, sort, and print
+  if(unique_user_count <= 10){
 
-    GLOBAL_TOP_TEN[i].count_of_tweets = GLOBAL_USERS_ARR[i].count_of_tweets;
-    GLOBAL_TOP_TEN[i].unique_id = GLOBAL_USERS_ARR[i].unique_id;
+    printing_index = unique_user_count;
+    //** put all users into temporary array
+    for(int i = 0; i < unique_user_count; i++){
 
-    if(GLOBAL_USERS_ARR[i].count_of_tweets < min){
-      min = GLOBAL_USERS_ARR[i].count_of_tweets;
-      index_of_min = i;
-    }
-  }
-
-
-  //** check remaining usernames against the current minimum
-  for(int i = 10; i < unique_user_count; i++){
-    
-    if(GLOBAL_USERS_ARR[i].count_of_tweets > min){
-      
-      GLOBAL_TOP_TEN[index_of_min].count_of_tweets = GLOBAL_USERS_ARR[i].count_of_tweets;
-      GLOBAL_TOP_TEN[index_of_min].unique_id = GLOBAL_USERS_ARR[i].unique_id;
-      min = GLOBAL_USERS_ARR[i].count_of_tweets;
+      GLOBAL_TOP_TEN[i].count_of_tweets = GLOBAL_USERS_ARR[i].count_of_tweets;
+      GLOBAL_TOP_TEN[i].unique_id = GLOBAL_USERS_ARR[i].unique_id;
     }
 
-    //** update min if necessary
-    for(int j = 0; j < 10; j++){
-      
-      if(GLOBAL_TOP_TEN[j].count_of_tweets < min){
-        min = GLOBAL_TOP_TEN[j].count_of_tweets;
-        index_of_min = j;
-       
-      }
-    }
- 
- }
-
-  //** sort top ten in temp array
-  for (int i = 0; i < 10; i++)
-  {
-    for (int j = i + 1; j < 10; j++)
+    //** sort users
+    for (int i = 0; i < unique_user_count; i++)
     {
-      if (GLOBAL_TOP_TEN[i].count_of_tweets < GLOBAL_TOP_TEN[j].count_of_tweets)
+      for (int j = i + 1; j < unique_user_count; j++)
       {
-        int temp_count = GLOBAL_TOP_TEN[i].count_of_tweets;
-        GLOBAL_TOP_TEN[i].count_of_tweets = GLOBAL_TOP_TEN[j].count_of_tweets;
-        GLOBAL_TOP_TEN[j].count_of_tweets = temp_count;
+        if (GLOBAL_TOP_TEN[i].count_of_tweets < GLOBAL_TOP_TEN[j].count_of_tweets)
+        {
+          int temp_count = GLOBAL_TOP_TEN[i].count_of_tweets;
+          GLOBAL_TOP_TEN[i].count_of_tweets = GLOBAL_TOP_TEN[j].count_of_tweets;
+          GLOBAL_TOP_TEN[j].count_of_tweets = temp_count;
 
-        int temp_id = GLOBAL_TOP_TEN[i].unique_id;
-        GLOBAL_TOP_TEN[i].unique_id = GLOBAL_TOP_TEN[j].unique_id;
-        GLOBAL_TOP_TEN[j].unique_id = temp_id;
+          int temp_id = GLOBAL_TOP_TEN[i].unique_id;
+          GLOBAL_TOP_TEN[i].unique_id = GLOBAL_TOP_TEN[j].unique_id;
+          GLOBAL_TOP_TEN[j].unique_id = temp_id;
+        }
+      }
+    }
+
+  }
+  //** if user count is greater than 10
+  else{
+
+    //** put first ten users in temporary array
+    for(int i = 0; i < 10; i++){
+
+      GLOBAL_TOP_TEN[i].count_of_tweets = GLOBAL_USERS_ARR[i].count_of_tweets;
+      GLOBAL_TOP_TEN[i].unique_id = GLOBAL_USERS_ARR[i].unique_id;
+
+      if(GLOBAL_USERS_ARR[i].count_of_tweets < min){
+        min = GLOBAL_USERS_ARR[i].count_of_tweets;
+        index_of_min = i;
+      }
+    }
+
+
+    //** check remaining usernames against the current minimum
+    for(int i = 10; i < unique_user_count; i++){
+
+      if(GLOBAL_USERS_ARR[i].count_of_tweets > min){
+
+        GLOBAL_TOP_TEN[index_of_min].count_of_tweets = GLOBAL_USERS_ARR[i].count_of_tweets;
+        GLOBAL_TOP_TEN[index_of_min].unique_id = GLOBAL_USERS_ARR[i].unique_id;
+        min = GLOBAL_USERS_ARR[i].count_of_tweets;
+      }
+
+      //** update min if necessary
+      for(int j = 0; j < 10; j++){
+
+        if(GLOBAL_TOP_TEN[j].count_of_tweets < min){
+          min = GLOBAL_TOP_TEN[j].count_of_tweets;
+          index_of_min = j;
+
+        }
+      }
+
+    }
+
+    //** sort top ten in temp array
+    for (int i = 0; i < 10; i++)
+    {
+      for (int j = i + 1; j < 10; j++)
+      {
+        if (GLOBAL_TOP_TEN[i].count_of_tweets < GLOBAL_TOP_TEN[j].count_of_tweets)
+        {
+          int temp_count = GLOBAL_TOP_TEN[i].count_of_tweets;
+          GLOBAL_TOP_TEN[i].count_of_tweets = GLOBAL_TOP_TEN[j].count_of_tweets;
+          GLOBAL_TOP_TEN[j].count_of_tweets = temp_count;
+
+          int temp_id = GLOBAL_TOP_TEN[i].unique_id;
+          GLOBAL_TOP_TEN[i].unique_id = GLOBAL_TOP_TEN[j].unique_id;
+          GLOBAL_TOP_TEN[j].unique_id = temp_id;
+        }
       }
     }
   }
+
 
   //** print each entry from USER_ARR with corresponding index from temp TOP_TEN array
-  if (unique_user_count >=10)
-  {   for(int i = 0; i < 10; i++){
-        int original_index = GLOBAL_TOP_TEN[i].unique_id;
+  for(int i = 0; i < printing_index; i++){
+    int original_index = GLOBAL_TOP_TEN[i].unique_id;
 
-        for(int j = 0; j < strlen(GLOBAL_USERS_ARR[original_index].twitter_username); j++){
-          printf("%c",GLOBAL_USERS_ARR[original_index].twitter_username[j]);
-        }
-        printf(": %d\n",GLOBAL_USERS_ARR[original_index].count_of_tweets);
+    for(int j = 0; j < strlen(GLOBAL_USERS_ARR[original_index].twitter_username); j++){
+      printf("%c",GLOBAL_USERS_ARR[original_index].twitter_username[j]);
     }
+    printf(": %d\n",GLOBAL_USERS_ARR[original_index].count_of_tweets);
   }
-
-  //* if num of users < 10, we just print those 
-  else {
-
-      for(int i = 0; i < unique_user_count ; i++){
-        int original_index = GLOBAL_USERS_ARR[i].unique_id;
-
-        for(int j = 0; j < strlen(GLOBAL_USERS_ARR[original_index].twitter_username); j++){
-          printf("%c",GLOBAL_USERS_ARR[original_index].twitter_username[j]);
-        }
-        printf(": %d\n",GLOBAL_USERS_ARR[original_index].count_of_tweets);
-      }
-  }
-
 }
 
 int main(int argc, char *argv[])
