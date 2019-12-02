@@ -113,7 +113,7 @@ int processing_file(char *file_csv)
     if(strlen(buf) > 1024){
       return -1;
     }
-   
+    int buf_length = strlen(buf);
 
     if (row_count > MAX_FILE_SIZE){
       // printf("row count %d is more than 20k\n", row_count);
@@ -135,6 +135,8 @@ int processing_file(char *file_csv)
 
     while (cur_char < strlen(buf))
     {
+
+    
 
       //** case of header , will also retrieve global comma count
       if (row_count == 1)
@@ -171,9 +173,15 @@ int processing_file(char *file_csv)
         //when we don't see comma
         else
         {
-          cur_char += 1;
-        }
+          if (cpy =='\n' && (cur_char != (buf_length -1))){ 
+            // printf("row count : %d ; cur char is %d\n", row_count, cur_char);
+            // printf("buf[%d]: %c %c", cur_char, cpy, buf[cur_char]);
+            return -1;
+          }
 
+          cur_char += 1;
+          }
+        
       }
 
       //**for all other rows excluding header
@@ -218,6 +226,10 @@ int processing_file(char *file_csv)
         }
         else
         {
+         if (cpy =='\n' && (cur_char != (buf_length -1))) { 
+              // printf("row count : %d ; cur char is %d\n", row_count, cur_char);
+              return -1;
+          }
           cur_char += 1;
 
         }
@@ -227,7 +239,7 @@ int processing_file(char *file_csv)
 
 
   }
-  printf("row comma count is: %d\n", row_count);
+  // printf("row comma count is: %d\n", row_count);
   return 0;
 }
 
