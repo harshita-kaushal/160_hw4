@@ -21,14 +21,13 @@ struct USER_ARR GLOBAL_TOP_TEN[10];
 int global_name_pos = 0;
 int global_header_comma_count = 0;
 int unique_user_count = 0;
-
-//finds position of name within the header (i.e first line of csv)
+//finds position of name within the header 
 int find_name_pos(char *file_csv)
 {
 
   FILE *csv_file = fopen(file_csv, "r"); // "r" for read
 
-  //todo more error checking later on
+  
   //checks if file exists
   if (!csv_file)
   {
@@ -44,6 +43,23 @@ int find_name_pos(char *file_csv)
   {
     field_count = 0;
     row_count++;
+
+
+      //in the case that name is found twice in the header
+      if (row_count ==1)
+      {   
+        char *ptr = strstr(buf, "name");
+        if (ptr !=NULL)
+        {
+          char *ptr_to_second_name = strstr(ptr+1, "name");
+          
+          if (ptr_to_second_name!= NULL)
+            {
+              return -1;
+            }
+        }
+    }
+
     char *field = strtok(buf, ",");
 
     //this is for the first row
@@ -70,7 +86,7 @@ int find_name_pos(char *file_csv)
   return global_name_pos;
 }
 
-//function used to check whether a field has quotes, no quotes, or are invalid
+//used to check whether a field has quotes, no quotes, or are invalid
 int check_quotes(char* buf, int last_char, int first_char)
 {
   //invalid quotes
@@ -95,8 +111,8 @@ int check_quotes(char* buf, int last_char, int first_char)
 
 /* @arg file_csv : the file passed into the command line
   *Checks  
-          *consistent number of commas across the whole file,
-          *index out of bounds errors (i.e if file length>20k, line length > 1024), 
+          *consistent number of commas across the whole file (returns invalid if too few or too many)
+          *index out of bounds errors  (i.e if file length>20k, line length > 1024 )
           *presence of new line character within fields   
   
   returns 0 if sucessful and if file is completely valid    */
@@ -356,6 +372,10 @@ void find_names(char *file_csv){
   }
 }
 
+
+
+/* args:none, returns: none 
+  prints the array of structs with the top ten tweeters */
 void print_top_ten(){
 
   int min = GLOBAL_USERS_ARR[0].count_of_tweets;
@@ -432,7 +452,6 @@ void print_top_ten(){
 int main(int argc, char *argv[])
 {
   int res_find_row = find_name_pos(argv[1]);
-
   int process_rest_file = processing_file(argv[1]);
 
   //invalid file check
@@ -445,15 +464,6 @@ int main(int argc, char *argv[])
   find_names(argv[1]);
 
   print_top_ten();
-
-  // for(int j=0; j < unique_user_count;j++){
-  //   printf("twitter username: ");
-  //   for(int i=0; i < strlen(GLOBAL_USERS_ARR[j].twitter_username); i++){
-  //     printf("%c",GLOBAL_USERS_ARR[j].twitter_username[i]);
-  //   }
-  //   printf(", Num of tweets: %d\n",GLOBAL_USERS_ARR[j].count_of_tweets);
-
-  // }
 
   return 0;
 }
