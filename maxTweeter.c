@@ -54,8 +54,10 @@ int find_name_pos(char *file_csv)
         }
       }
 
+      //**if name not found in header
       else 
       {
+
         return -1;
       }
     }
