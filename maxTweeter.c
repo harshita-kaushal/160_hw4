@@ -305,8 +305,6 @@ void find_names(char *file_csv){
     int last_char = 0;
     int ret_val = 0;
 
-    //char temp_field[1023]; //TODO check whether size of 1023 is okay
-
     while (cur_char < strlen(buf))
     {
       char temp_field[1023] = {"\0"};
@@ -314,7 +312,7 @@ void find_names(char *file_csv){
       if (row_count > 1)
       {
         char cpy = buf[cur_char];
-        //see comma
+        //** see comma
         if (cpy == ',')
         {
           last_char = cur_char-1;
@@ -332,14 +330,12 @@ void find_names(char *file_csv){
             }
             else //case where there are not quotes
             {
-              //printf("name: ");
+             
               int j = 0;
               for(int i = first_char; i <= last_char; i++){
                 temp_field[j] = buf[i];
-                //printf("%c",temp_field[j]);
                 j++;
               }
-              //printf("\n");
               ret_val = struct_match_search(temp_field);
               add_to_struct(temp_field, ret_val); //call add function
             }
@@ -350,7 +346,8 @@ void find_names(char *file_csv){
           row_comma_count++;
           field_count ++;
         }
-        //when we don't see comma
+        
+        //** when we don't see comma
         else
         {
           cur_char += 1;
@@ -437,26 +434,24 @@ void print_top_ten(){
     }
   }
 
-  //* if num of users is less than 10, we just print those 
+  //* if num of users < 10, we just print those 
   else {
+
       for(int i = 0; i < unique_user_count ; i++){
-      int original_index = GLOBAL_USERS_ARR[i].unique_id;
+        int original_index = GLOBAL_USERS_ARR[i].unique_id;
 
-      for(int j = 0; j < strlen(GLOBAL_USERS_ARR[original_index].twitter_username); j++){
-        printf("%c",GLOBAL_USERS_ARR[original_index].twitter_username[j]);
+        for(int j = 0; j < strlen(GLOBAL_USERS_ARR[original_index].twitter_username); j++){
+          printf("%c",GLOBAL_USERS_ARR[original_index].twitter_username[j]);
+        }
+        printf(": %d\n",GLOBAL_USERS_ARR[original_index].count_of_tweets);
       }
-      printf(": %d\n",GLOBAL_USERS_ARR[original_index].count_of_tweets);
-    }
-
   }
-
 
 }
 
-
-
 int main(int argc, char *argv[])
 {
+
   int res_find_row = find_name_pos(argv[1]);
   int process_rest_file = processing_file(argv[1]);
 
