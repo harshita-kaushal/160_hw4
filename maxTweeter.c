@@ -113,7 +113,12 @@ int processing_file(char *file_csv)
     if(strlen(buf) > 1024){
       return -1;
     }
+   
 
+    if (row_count > MAX_FILE_SIZE){
+      // printf("row count %d is more than 20k\n", row_count);
+      return-1;
+    }
     
     row_count++;
     //int comma_count = 0;
@@ -214,14 +219,15 @@ int processing_file(char *file_csv)
         else
         {
           cur_char += 1;
-        }
 
+        }
+       
       }
     }
 
 
   }
-
+  printf("row comma count is: %d\n", row_count);
   return 0;
 }
 
