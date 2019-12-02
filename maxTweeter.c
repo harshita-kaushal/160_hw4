@@ -53,6 +53,11 @@ int find_name_pos(char *file_csv)
           return -1;
         }
       }
+
+      else 
+      {
+        return -1;
+      }
     }
 
     char *field = strtok(buf, ",");
@@ -112,7 +117,6 @@ int processing_file(char *file_csv)
 
   if (!csv_file)
   {
-    printf("Can't open file\n");
     return -1;
   }
 
