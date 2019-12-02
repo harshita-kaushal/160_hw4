@@ -15,7 +15,6 @@ struct USER_ARR
 
 int GLOBAL_FIELD_QUOTED[100] = {0};
 
-//can declare this within main
 struct USER_ARR GLOBAL_USERS_ARR[MAX_FILE_SIZE];
 struct USER_ARR GLOBAL_TOP_TEN[10];
 
@@ -93,7 +92,15 @@ int check_quotes(char* buf, int last_char, int first_char)
   }
 }
 
-//right now, it checks for a consistent number of comma counts for each row
+
+/* @arg file_csv : the file passed into the command line
+  *Checks  
+          *consistent number of commas across the whole file,
+          *index out of bounds errors (i.e if file length>20k, line length > 1024), 
+          *presence of new line character within fields   
+  
+  returns 0 if sucessful and if file is completely valid    */
+
 int processing_file(char *file_csv)
 {
 
@@ -136,7 +143,6 @@ int processing_file(char *file_csv)
     while (cur_char < strlen(buf))
     {
 
-    
 
       //** case of header , will also retrieve global comma count
       if (row_count == 1)
@@ -199,12 +205,10 @@ int processing_file(char *file_csv)
             return -1;
           }
 
+          //check for validity of quotes
           quote_status = check_quotes(buf,last_char,first_char);
-          //printf("row comma count is %d, char is %d\n", row_comma_count,cur_char);
-          //printf("row count: %d\n", row_count);
 
           if(quote_status == -1 || (quote_status != GLOBAL_FIELD_QUOTED[field_count])){
-            printf("row count: %d\n", row_count);
             printf("Invalid quotes or does not match header\n");
             return -1;
           }
@@ -214,8 +218,8 @@ int processing_file(char *file_csv)
           cur_char += 1;
 
         }
-        //TODO this error case no longer works but changing to strlen(buf)-1 causes program to hang
-        else if(cur_char == 1023)
+        
+        else if(cur_char == (buf_length-1))
         {
           if(row_comma_count < global_header_comma_count)
           {
