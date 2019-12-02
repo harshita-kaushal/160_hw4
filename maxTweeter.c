@@ -21,19 +21,18 @@ struct USER_ARR GLOBAL_TOP_TEN[10];
 int global_name_pos = 0;
 int global_header_comma_count = 0;
 int unique_user_count = 0;
+
 //finds position of name within the header 
 int find_name_pos(char *file_csv)
 {
 
   FILE *csv_file = fopen(file_csv, "r"); // "r" for read
 
-  
-  //checks if file exists
   if (!csv_file)
-  {
-    printf("Can't open file\n");
+  { printf("Can't open file\n");
     return -1;
   }
+
   char buf[1024];
   int row_count = 0;
   int field_count = 0;
@@ -43,7 +42,6 @@ int find_name_pos(char *file_csv)
   {
     field_count = 0;
     row_count++;
-
 
       //in the case that name is found twice in the header
       if (row_count ==1)
@@ -61,13 +59,9 @@ int find_name_pos(char *file_csv)
     }
 
     char *field = strtok(buf, ",");
-
-    //this is for the first row
     //assuming that header is always row1
     while (field)
     {
-
-      // printf("%d : %s\n", index_of_field ,field);
       if (strcmp(field, "name") == 0)
       {
         global_name_pos = index_of_field;
@@ -79,7 +73,6 @@ int find_name_pos(char *file_csv)
 
       field_count++;
     }
-    // printf("\n");
     break;
   }
   fclose(csv_file);
@@ -110,13 +103,11 @@ int check_quotes(char* buf, int last_char, int first_char)
 
 
 /* @arg file_csv : the file passed into the command line
-  *Checks  
+  *processing_file() checks  
           *consistent number of commas across the whole file (returns invalid if too few or too many)
           *index out of bounds errors  (i.e if file length>20k, line length > 1024 )
           *presence of new line character within fields   
-  
   returns 0 if sucessful and if file is completely valid    */
-
 int processing_file(char *file_csv)
 {
 
@@ -375,13 +366,13 @@ void find_names(char *file_csv){
 
 
 /* args:none, returns: none 
-  prints the array of structs with the top ten tweeters */
+function prints the array of structs with the top ten tweeters */
 void print_top_ten(){
 
   int min = GLOBAL_USERS_ARR[0].count_of_tweets;
   int index_of_min = 0;
 
-  //put first ten users in array
+  //** put first ten users in array
   for(int i = 0; i < 10; i++){
 
     GLOBAL_TOP_TEN[i].count_of_tweets = GLOBAL_USERS_ARR[i].count_of_tweets;
@@ -394,31 +385,29 @@ void print_top_ten(){
   }
 
 
-  //check remaining usernames against the current minimum
+  //** check remaining usernames against the current minimum
   for(int i = 10; i < unique_user_count; i++){
     
     if(GLOBAL_USERS_ARR[i].count_of_tweets > min){
       
       GLOBAL_TOP_TEN[index_of_min].count_of_tweets = GLOBAL_USERS_ARR[i].count_of_tweets;
       GLOBAL_TOP_TEN[index_of_min].unique_id = GLOBAL_USERS_ARR[i].unique_id;
-      
-      // printf("GLOBAL TOP TEN[%d]: %d tweets, %d\n", index_of_min, GLOBAL_TOP_TEN[index_of_min].count_of_tweets , 
-          // GLOBAL_USERS_ARR[i].unique_id);
       min = GLOBAL_USERS_ARR[i].count_of_tweets;
     }
-    //update min if necessary
+
+    //** update min if necessary
     for(int j = 0; j < 10; j++){
-      // printf("min iteration is %d\n", min);
+      
       if(GLOBAL_TOP_TEN[j].count_of_tweets < min){
         min = GLOBAL_TOP_TEN[j].count_of_tweets;
         index_of_min = j;
-        // printf("reset min to be %d \n", min);
+       
       }
     }
  
  }
 
-  //sort top ten in temp array
+  //** sort top ten in temp array
   for (int i = 0; i < 10; i++)
   {
     for (int j = i + 1; j < 10; j++)
@@ -436,17 +425,34 @@ void print_top_ten(){
     }
   }
 
-//print each entry from USER_ARR with corresponding index from temp TOP_TEN array
-  for(int i = 0; i < 10; i++){
-    int original_index = GLOBAL_TOP_TEN[i].unique_id;
+  //** print each entry from USER_ARR with corresponding index from temp TOP_TEN array
+  if (unique_user_count >=10)
+  {   for(int i = 0; i < 10; i++){
+        int original_index = GLOBAL_TOP_TEN[i].unique_id;
 
-    for(int j = 0; j < strlen(GLOBAL_USERS_ARR[original_index].twitter_username); j++){
-      printf("%c",GLOBAL_USERS_ARR[original_index].twitter_username[j]);
+        for(int j = 0; j < strlen(GLOBAL_USERS_ARR[original_index].twitter_username); j++){
+          printf("%c",GLOBAL_USERS_ARR[original_index].twitter_username[j]);
+        }
+        printf(": %d\n",GLOBAL_USERS_ARR[original_index].count_of_tweets);
     }
-    printf(": %d\n",GLOBAL_USERS_ARR[original_index].count_of_tweets);
   }
 
+  //* if num of users is less than 10, we just print those 
+  else {
+      for(int i = 0; i < unique_user_count ; i++){
+      int original_index = GLOBAL_USERS_ARR[i].unique_id;
+
+      for(int j = 0; j < strlen(GLOBAL_USERS_ARR[original_index].twitter_username); j++){
+        printf("%c",GLOBAL_USERS_ARR[original_index].twitter_username[j]);
+      }
+      printf(": %d\n",GLOBAL_USERS_ARR[original_index].count_of_tweets);
+    }
+
+  }
+
+
 }
+
 
 
 int main(int argc, char *argv[])
