@@ -224,9 +224,6 @@ int processing_file(char *file_csv)
         }
         else
         {
-          if (cpy =='\n' && (cur_char != (buf_length -1))) {
-            return -1;
-          }
           cur_char += 1;
 
         }
